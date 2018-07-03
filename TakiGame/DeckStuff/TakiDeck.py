@@ -34,8 +34,14 @@ class Deck:
     def shuffle(self):
         shuffle(self.cards_deck)
 
+    def set_deck(self, cards):
+        self.cards_deck = shuffle(cards)
+
+    def get_number_of_cards_left(self):
+        return len(self.cards_deck)
+
     def deal(self, num_of_cards_to_deal=1):
-        return [self.cards_deck.pop() for i in num_of_cards_to_deal]
+        return [self.cards_deck.pop() for i in range(num_of_cards_to_deal)]
 
     def __iter__(self):
         return self.cards_deck.__iter__()

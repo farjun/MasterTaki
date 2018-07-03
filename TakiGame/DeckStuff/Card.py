@@ -37,7 +37,9 @@ class SpecialNoColor(Enum):
 
 
 SPECIAL_CARDS_WHICH_HAVE_NO_MORE_CARDS_TO_PUT_ON = {SpecialNoColor.CHANGE_COLOR, SpecialWithColor.CRAZY_CARD,
-                                                    SpecialNoColor.KING}
+                                                    SpecialNoColor.KING}  # not true for game with more than 2 players
+
+SPECIAL_CARDS_WHICH_HAVE_MORE_CARDS_TO_PUT_ON = {SpecialNoColor.SUPER_TAKI, SpecialWithColor.TAKI, SpecialWithColor.PLUS}
 
 
 class Card:
@@ -46,7 +48,8 @@ class Card:
         self.number_or_special = number_or_special
 
     def can_have_more_cards_on_top(self):
-        return self.number_or_special not in SPECIAL_CARDS_WHICH_HAVE_NO_MORE_CARDS_TO_PUT_ON
+        return self.number_or_special in SPECIAL_CARDS_WHICH_HAVE_MORE_CARDS_TO_PUT_ON
+        # return self.number_or_special not in SPECIAL_CARDS_WHICH_HAVE_NO_MORE_CARDS_TO_PUT_ON
 
     def can_be_placed_on(self, other):
         if self.number_or_special in Number or self.number_or_special in SpecialWithColor:
@@ -55,9 +58,39 @@ class Card:
         if self.number_or_special in SpecialNoColor:
             return True
 
-    def is_taki_card(self):
-        return self.number_or_special is SpecialNoColor.SUPER_TAKI or self.number_or_special is SpecialWithColor.TAKI
+        if self.number_or_special == other.number_or_special:
+            return True
 
+        return False  # check if we ever get here and why
+
+    def is_taki_card(self, color):
+        return self.number_or_special is SpecialNoColor.SUPER_TAKI or \
+               (self.number_or_special is SpecialWithColor.TAKI and self.color is color)
+
+    def is_plus_2(self):
+        return self.number_or_special is SpecialWithColor.PLUS_2
+
+    def is_king(self):
+        return self.number_or_special is SpecialNoColor.KING
+
+    def is_change_direction(self):
+        return self.number_or_special is SpecialWithColor.CHANGE_DIRECTION
+
+    def is_stop(self):
+        return self.number_or_special is SpecialWithColor.STOP
+
+    def is_plus(self):
+        return self.number_or_special is SpecialWithColor.PLUS
+
+    def get_color(self):
+        return self.color
+
+    def get_value(self):
+        return self.number_or_special
 
     def __eq__(self, other):
         return self.color == other.color and self.number_or_special == other.number_or_special
+
+    def __repr__(self):
+        return "<Card: %s\n color: %s>" % (self.number_or_special, self.color)
+

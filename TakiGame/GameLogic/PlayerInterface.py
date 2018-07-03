@@ -3,17 +3,18 @@ class PlayerInterface:
     """
     just override get action with a class inheriting from this interface
     """
-    def __init__(self, name):
+    def __init__(self, name, game):
         self.name = name
         self.cards = list()
+        self.game = game
 
-    def get_action(self)->Action:
+    def choose_action(self)->Action:
         pass
 
     def player_is_done(self):
         return len(self.cards) == 0
 
-    def take_cards(self,cards_to_take):
+    def take_cards(self, cards_to_take):
         self.cards.extend(cards_to_take)
 
     def use_cards(self, cards_to_use):
@@ -23,6 +24,9 @@ class PlayerInterface:
             except:
                 print(card)
                 raise CardNotInHandException
+
+    def get_number_of_cards(self):
+        return len(self.cards)
 
 
 class CardNotInHandException(Exception):
