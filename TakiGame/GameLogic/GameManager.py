@@ -27,6 +27,7 @@ class GameManager:
         self.number_of_cards_to_draw = 1
         self.progress_direction = 1
         self.first_turn = True
+        self.active_color = Color.NO_COLOR
 
     def __init_players(self, playersTypes):
         players = []
@@ -71,6 +72,10 @@ class GameManager:
             self.number_of_cards_to_draw = 1
             self.cur_player_index = self.cur_player_index - self.progress_direction  # player will get another turn
         self.pile.extend(action.get_cards())
+        if action.action_is_change_color():
+            self.active_color = action.action_get_change_color()
+        else:
+            self.active_color = self.pile[-1].get_color()
         self.first_turn = False  # important for starting the game with plus 2
 
     # def __check_if_action_is_legal(self, action):
@@ -94,6 +99,20 @@ class GameManager:
         for cardinality in range(1, (len(same_color_cards) + 1)):
             yield from permutations(same_color_cards, cardinality)
 
+    def __end_taki_with_no_color_actions(self, current_subset, no_color_cards):
+        actions = []
+        change_color_indices = [i for i in range(len(no_color_cards)) if no_color_cards[i].is_change_color()]
+        for index in change_color_indices:
+            actions.extend([Action(s.get_cards() + [no_color_cards[index]], no_op=False, change_color=color)
+                        for color in Color if color is not Color.NO_COLOR
+                        for s in current_subset])
+        if len(change_color_indices) < len(no_color_cards):
+            # add other no color cards
+            actions.extend([Action(s.get_cards() + [special_card])
+                        for special_card in no_color_cards if not special_card.is_change_color()
+                        for s in current_subset])
+        return actions
+
     def __generate_taki_card_moves(self, player_cards, color):
         current_color_cards = [card for card in player_cards if card.get_color() is color and not card.is_taki_card(color)]
         taki_cards = [card for card in player_cards if card.is_taki_card(color)]
@@ -101,17 +120,15 @@ class GameManager:
                           card.get_color() is Color.NO_COLOR and not card.is_taki_card(Color.NO_COLOR)]
         subsets = []
         for i in range(len(taki_cards)):
-            current_subset = [[taki_cards[i]] + list(s) for s in self.__subsets(current_color_cards)]  # add the taki card
+            current_subset = [Action([taki_cards[i]] + list(s)) for s in self.__subsets(current_color_cards)]  # add the taki card
             subsets.extend(current_subset)
             # taki can end with no color card, add those options to every existing option
-            current_subset_with_special_card = [s + [special_card] for special_card in no_color_cards for s in
-                                                current_subset]
-            subsets.extend(current_subset_with_special_card)
+            subsets.extend(self.__end_taki_with_no_color_actions(current_subset, no_color_cards))
         return subsets
 
     def __search_color_cards(self, player_cards, color):
         if color is Color.NO_COLOR:  # todo maybe change for more oop-y function
-            possible_actions = [Action([card]) for card in player_cards if card.get_color() is color]
+            possible_actions = self.__add_no_color_actions(player_cards)
             for other_color in Color:
                 if other_color is not Color.NO_COLOR:  # prevent infinite loop, add all possible options from other colors
                     possible_actions.extend(self.__search_color_cards(player_cards, other_color))
@@ -128,6 +145,17 @@ class GameManager:
     def __active_plus_2(self):
         return self.number_of_cards_to_draw > 1 or self.first_turn
 
+    def __add_no_color_actions(self, player_cards):
+        no_color_actions = []
+        no_color_cards = [card for card in player_cards if card.get_color() is Color.NO_COLOR]
+        for card in no_color_cards:
+            if card.is_change_color():
+                no_color_actions.extend([Action([card], no_op=False, change_color=other_color)
+                                         for other_color in Color if other_color is not Color.NO_COLOR])
+            else:
+                no_color_actions.extend(Action([card]))
+        return no_color_actions
+
     def get_legal_actions(self, player_cards):
         legal_actions = [Action([], no_op=True)]
         card_on_top_of_pile = self.pile[-1]
@@ -135,26 +163,30 @@ class GameManager:
             legal_actions.extend(self.__search_for_plus_2(player_cards))
             legal_actions.extend(self.__search_for_king(player_cards))
             return legal_actions
-        legal_actions.extend(self.__search_color_cards(player_cards, card_on_top_of_pile.get_color()))
+        legal_actions.extend(self.__search_color_cards(player_cards, self.active_color))
         legal_actions.extend(self.__search_same_value_cards(player_cards, card_on_top_of_pile.get_value()))
-        if card_on_top_of_pile.get_color() is not Color.NO_COLOR:  # prevent duplications - no color cards can be placed on any card
-            legal_actions.extend([Action([card]) for card in player_cards if card.get_color() is Color.NO_COLOR])
+        if self.active_color is not Color.NO_COLOR:  # prevent duplications - no color cards can be placed on any card
+            legal_actions.extend(self.__add_no_color_actions(player_cards))
         return legal_actions
 
     def get_other_players_number_of_cards(self):
-        number_of_cards = [self.players[(self.cur_player_index + i * self.progress_direction) % len(
-            self.players)].get_number_of_cards()
+        number_of_cards = [self.players[(self.cur_player_index + i * self.progress_direction) % len(self.players)].get_number_of_cards()
                            for i in range(1, len(self.players))]
         return number_of_cards
 
+    def __init_state(self):
+        self.pile.extend(self.deck.deal())
+        self.active_color = self.pile[-1].get_color()
+        self.number_of_cards_to_draw = 2 if self.pile[-1].is_plus_2() else 1  # start the game with plus 2
+
     def run_game(self):
         self.__deal_players()
-        self.pile.extend(self.deck.deal())
+        self.__init_state()
         self.__move_to_next_players_turn()
         cur_player = self.players[self.cur_player_index]
 
         while True:
-            print("Player %d turn:" % (self.cur_player_index % len(self.players) + 1))
+            print("Player %d turn:" % self.cur_player_index)
             print("******\nLeading Card: %s\n******" % self.pile[-1])
             cur_action = cur_player.choose_action()
             self.__execute_action(cur_action)

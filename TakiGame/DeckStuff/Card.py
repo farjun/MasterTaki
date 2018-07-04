@@ -76,6 +76,9 @@ class Card:
     def is_change_direction(self):
         return self.number_or_special is SpecialWithColor.CHANGE_DIRECTION
 
+    def is_change_color(self):
+        return self.number_or_special is SpecialNoColor.CHANGE_COLOR
+
     def is_stop(self):
         return self.number_or_special is SpecialWithColor.STOP
 
