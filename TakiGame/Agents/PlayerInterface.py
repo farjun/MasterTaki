@@ -1,4 +1,6 @@
 from TakiGame.GameLogic.Action import Action
+
+
 class PlayerInterface:
     """
     just override get action with a class inheriting from this interface
@@ -19,11 +21,7 @@ class PlayerInterface:
 
     def use_cards(self, cards_to_use):
         for card in cards_to_use:
-            try:
-                self.cards.index(card)
-            except:
-                print(card)
-                raise CardNotInHandException
+            self.cards.remove(card)
 
     def get_number_of_cards(self):
         return len(self.cards)

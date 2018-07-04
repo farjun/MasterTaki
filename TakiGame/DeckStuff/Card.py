@@ -11,7 +11,7 @@ class Color(Enum):
 
 class Number(Enum):
     ONE = 1
-    TWO = 2
+    # TWO = 2 - apparently two and plus two is the same card
     THREE = 3
     FOUR = 4
     FIVE = 5
@@ -27,7 +27,7 @@ class SpecialWithColor(Enum):
     STOP = 3
     CHANGE_DIRECTION = 4
     TAKI = 5
-    CRAZY_CARD = 6
+    # CRAZY_CARD = 6 - which card is that?
 
 
 class SpecialNoColor(Enum):
@@ -36,8 +36,8 @@ class SpecialNoColor(Enum):
     KING = 3
 
 
-SPECIAL_CARDS_WHICH_HAVE_NO_MORE_CARDS_TO_PUT_ON = {SpecialNoColor.CHANGE_COLOR, SpecialWithColor.CRAZY_CARD,
-                                                    SpecialNoColor.KING}  # not true for game with more than 2 players
+# SPECIAL_CARDS_WHICH_HAVE_NO_MORE_CARDS_TO_PUT_ON = {SpecialNoColor.CHANGE_COLOR, SpecialWithColor.CRAZY_CARD,
+#                                                     SpecialNoColor.KING}  # not true for game with more than 2 players
 
 SPECIAL_CARDS_WHICH_HAVE_MORE_CARDS_TO_PUT_ON = {SpecialNoColor.SUPER_TAKI, SpecialWithColor.TAKI, SpecialWithColor.PLUS}
 
