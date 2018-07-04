@@ -1,5 +1,7 @@
+from TakiGame.Players.PlayerInterface import PlayerInterface
+class HeuristicReflexAgent(PlayerInterface):
 
-class ReflexAgent(object):
+    def __init__(self, game):
+        super().__init__("HeuristicReflexAgent", game)
 
-    def __init__(self):
 
