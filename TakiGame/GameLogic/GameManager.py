@@ -2,11 +2,11 @@ from itertools import permutations
 
 import sys
 
-from TakiGame.Agents.PlayerInterface import PlayerInterface
+from TakiGame.Players.PlayerInterface import PlayerInterface
 from TakiGame.DeckStuff.Card import Color
 from TakiGame.DeckStuff.TakiDeck import Deck
 from TakiGame.GameLogic.Action import Action
-from TakiGame.Agents.ManualAgent import ManualAgent
+from TakiGame.Players.ManualAgent import ManualAgent
 
 
 class NotEnoughPlayersException(Exception):
