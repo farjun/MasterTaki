@@ -67,3 +67,6 @@ class Action:
         if self.action_is_change_color():
             return repr(self.cards_to_put) + " Change color to:" + str(self.change_color)
         return repr(self.cards_to_put)
+
+    def __eq__(self, other):
+        return other.get_cards() == self.get_cards() and self.action_get_change_color() == other.action_get_change_color()
