@@ -14,6 +14,10 @@ class NotEnoughPlayersException(Exception):
 
 
 NUM_OF_CARDS_TO_DEAL = 8
+PLAYER = 0
+PLAYER_TYPE = 1
+PLAYER_SCORE = 2
+PLAYER_NAME = 0
 
 
 class GameManager:
@@ -22,13 +26,12 @@ class GameManager:
             raise NotEnoughPlayersException
         self.players = self.__init_players(playersTypes)
         self.number_of_games = games
-        self.scoring_table = [0]*len(self.players)
 
     def __init_players(self, playersTypes):
-        players = []
-        for player in playersTypes.values():
-            if player[1] == "M":
-                players.append(ManualAgent(player[1], self))
+        players = {}
+        for id, player_details in enumerate(playersTypes.values()):
+            if player_details[1] == "M":
+                players[id] = [ManualAgent(player_details[PLAYER_NAME], self), "Manual", 0]
         return players
 
     def __move_to_next_players_turn(self):
@@ -36,15 +39,16 @@ class GameManager:
         Change current player index to next player, according to game direction.
         """
         self.cur_player_index = (self.cur_player_index + 1 * self.progress_direction) % len(self.players)
+        return self.players[self.cur_player_index][PLAYER]
 
     def __deal_players(self):
         """
         Deal the initial hand of any player.
         :return:
         """
-        for player in self.players:
+        for player in self.players.values():
             hand = self.deck.deal(NUM_OF_CARDS_TO_DEAL)
-            player.take_cards(hand)
+            player[PLAYER].take_cards(hand)
 
     def __update_deck(self):
         """
@@ -61,7 +65,7 @@ class GameManager:
         if self.number_of_cards_to_draw > self.deck.get_number_of_cards_left():
             self.__update_deck()
         cards_to_take = self.deck.deal(self.number_of_cards_to_draw)
-        self.players[self.cur_player_index].take_cards(cards_to_take)
+        self.players[self.cur_player_index][PLAYER].take_cards(cards_to_take)
         self.number_of_cards_to_draw = 1
 
     def __execute_action(self, action):
@@ -69,7 +73,7 @@ class GameManager:
         Execute and change game state according to the given action.
         :param action: action to execute.
         """
-        self.players[self.cur_player_index].use_cards(action.get_cards())  # remove cards from player's hand
+        self.players[self.cur_player_index][PLAYER].use_cards(action.get_cards())  # remove cards from player's hand
         if action.action_is_stop():
             self.__move_to_next_players_turn()  # skip next player turn
         if action.action_is_change_direction() and len(self.players) > 2:  # change direction has no affect on 2 players game
@@ -250,28 +254,34 @@ class GameManager:
         """
         Print end game message and update scoring table.
         """
-        print("Player %d is the winner" % (self.cur_player_index + 1))
-        self.scoring_table[self.cur_player_index] += 1
+        print("\n******\nPlayer %d is the winner\n******\n" % (self.cur_player_index + 1))
+        self.players[self.cur_player_index][2] += 1
 
     def __run_single_game(self):
         """
         Runs single taki game and update scoring table according to game's result.
         """
         self.__init_state()
+        cur_player = self.players[self.cur_player_index][PLAYER]
         while True:
             print("Player %d turn:" % (self.cur_player_index+1))
             print("******\nLeading Card: %s\nLeading Color: %s\n******" % (self.pile[-1].get_value(), self.active_color))
-            cur_action = self.players[self.cur_player_index].choose_action()
+            cur_action = cur_player.choose_action()
             self.__execute_action(cur_action)
-            if self.players[self.cur_player_index].player_is_done() and not cur_action.action_is_plus():
+            if cur_player.player_is_done() and not cur_action.action_is_plus():
                 self.__update_winner()
                 return
-            self.__move_to_next_players_turn()
+            cur_player = self.__move_to_next_players_turn()
 
     def run_game(self):
         for i in range(self.number_of_games):
             self.__run_single_game()
-        return self.scoring_table
+
+    def print_scoring_table(self):
+        for player in self.players.values():
+            print("Player Name: %s\nPlayer Type: %s\nPlayer Score: %s" % (player[PLAYER].get_name(),
+                                                                          player[PLAYER_TYPE],
+                                                                          player[PLAYER_SCORE]))
 
 
 if __name__ == '__main__':
@@ -279,5 +289,5 @@ if __name__ == '__main__':
     players = {"Player1": ["Ido", "M"], "Player2": ["Shachar", "M"]}
     number_of_games = 3
     game = GameManager(players, number_of_games)
-    scoring_table = game.run_game()
-    print(scoring_table)
+    game.run_game()
+    game.print_scoring_table()

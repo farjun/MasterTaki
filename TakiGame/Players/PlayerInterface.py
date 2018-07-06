@@ -10,7 +10,10 @@ class PlayerInterface:
         self.cards = list()
         self.game = game
 
-    def choose_action(self,all_leagal_actions)->Action:
+    def get_name(self):
+        return self.name
+
+    def choose_action(self)->Action:
         pass
 
     def player_is_done(self):
