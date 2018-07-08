@@ -7,6 +7,7 @@ from TakiGame.DeckStuff.Card import Color
 from TakiGame.DeckStuff.TakiDeck import Deck
 from TakiGame.GameLogic.Action import Action
 from TakiGame.Players.ManualAgent import ManualAgent
+from Agents.DeterministicAgents.ReflexAgentInterface import HeuristicReflexAgent
 
 
 class NotEnoughPlayersException(Exception):
@@ -32,6 +33,8 @@ class GameManager:
         for id, player_details in enumerate(playersTypes.values()):
             if player_details[1] == "M":
                 players[id] = [ManualAgent(player_details[PLAYER_NAME], self), "Manual", 0]
+            if player_details[1] == "H":
+                players[id] = [HeuristicReflexAgent(self, [HeuristicReflexAgent.color_heuristic], False),"Heuristic",0]
         return players
 
     def __move_to_next_players_turn(self):
@@ -64,7 +67,7 @@ class GameManager:
         """
         if self.number_of_cards_to_draw > self.deck.get_number_of_cards_left():
             cards_to_take = self.deck.deal(self.deck.get_number_of_cards_left())
-            self.players[self.cur_player_index][PLAYER].take_cards(cards_to_take)
+            self.players[self.cur_player_index][PLAYER].take_cardsll(cards_to_take)
             self.number_of_cards_to_draw -= self.deck.get_number_of_cards_left()
             self.__update_deck()
 
@@ -290,7 +293,7 @@ class GameManager:
 
 if __name__ == '__main__':
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
-    players = {"Player1": ["Ido", "M"], "Player2": ["Shachar", "M"]}
+    players = {"Player1": ["Ido", "H"], "Player2": ["Shachar", "M"]}
     number_of_games = 3
     game = GameManager(players, number_of_games)
     game.run_game()
