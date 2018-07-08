@@ -58,6 +58,12 @@ class Action:
     def action_get_change_color(self):
         return self.change_color
 
+    def begin_with_super_taki(self):
+        if self.action_is_draw():
+            return False
+        first_card = self.cards_to_put[0]
+        return first_card.is_super_taki()
+
     def __iter__(self):
         return self.cards_to_put.__iter__()
 

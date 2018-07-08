@@ -1,4 +1,5 @@
 from TakiGame.Players.PlayerInterface import PlayerInterface
+from TakiGame.DeckStuff.Card import Color
 import numpy as np
 
 class HeuristicReflexAgent(PlayerInterface):
@@ -29,10 +30,10 @@ class HeuristicReflexAgent(PlayerInterface):
         all_legal_actions_scores = list()
         for legal_action in all_legal_actions:
             if self.parameter_learning: # todo I don't understand what it means so for now I have assign it as false
-                action_score = self._get_action_score_by_mode([h(legal_action) for h in self.H], mode)
+                action_score = self._get_action_score_by_mode([h(self,legal_action) for h in self.H], mode)
                 all_legal_actions_scores.append(action_score)
             else:
-                action_score = self._get_action_score_by_mode([h(legal_action) for h in self.H], mode)
+                action_score = self._get_action_score_by_mode([h(self,legal_action) for h in self.H], mode)
                 all_legal_actions_scores.append(action_score)
 
         max_score = max(all_legal_actions_scores)
@@ -49,7 +50,7 @@ class HeuristicReflexAgent(PlayerInterface):
         pass
 
     def color_heuristic(self, action):
-        if action is action.action_is_draw() or action is action.action_is_change_color():
+        if action.action_get_change_color() == Color.NO_COLOR and not action.begin_with_super_taki():
             return 0
         for card in self.cards:
             if card.color != action.action_get_change_color and card.color == self.game.active_color:

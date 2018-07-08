@@ -85,6 +85,9 @@ class Card:
     def is_plus(self):
         return self.number_or_special is SpecialWithColor.PLUS
 
+    def is_super_taki(self):
+        return self.number_or_special and SpecialNoColor.SUPER_TAKI
+
     def get_color(self):
         return self.color
 
