@@ -63,7 +63,11 @@ class GameManager:
         Draw current number of cards to draw from the deck and give them to the current player.
         """
         if self.number_of_cards_to_draw > self.deck.get_number_of_cards_left():
+            cards_to_take = self.deck.deal(self.deck.get_number_of_cards_left())
+            self.players[self.cur_player_index][PLAYER].take_cards(cards_to_take)
+            self.number_of_cards_to_draw -= self.deck.get_number_of_cards_left()
             self.__update_deck()
+
         cards_to_take = self.deck.deal(self.number_of_cards_to_draw)
         self.players[self.cur_player_index][PLAYER].take_cards(cards_to_take)
         self.number_of_cards_to_draw = 1
