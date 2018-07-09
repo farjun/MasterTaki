@@ -293,7 +293,7 @@ class GameManager:
 
 if __name__ == '__main__':
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
-    players = {"Player1": ["Ido", "H"], "Player2": ["Shachar", "M"]}
+    players = {"Player1": ["Ido", "H"], "Player2": ["Shachar", "H"]}
     number_of_games = 3
     game = GameManager(players, number_of_games)
     game.run_game()
