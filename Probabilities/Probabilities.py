@@ -13,7 +13,6 @@ def random_hand(number_of_cards, game):
     """
 
     deck = get_current_deck(game)
-
     adversary_hand = []
     for i in range(0, number_of_cards):
         adversary_hand.append(deck.pop())
@@ -22,6 +21,11 @@ def random_hand(number_of_cards, game):
 
 
 def get_current_deck(game):
+    """
+    Will initiate a deck and subtract the cards that are in the pile or our hand
+    :param game: A object of the game
+    :return: The current deck with the opponent hand
+    """
 
     deck = Deck().cards_deck
     # Remove cards that are in the pile
