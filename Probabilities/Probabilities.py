@@ -11,6 +11,18 @@ def random_hand(number_of_cards, game):
     :param game: A object of the game
     :return: A random set of cards
     """
+
+    deck = get_current_deck(game)
+
+    adversary_hand = []
+    for i in range(0, number_of_cards):
+        adversary_hand.append(deck.pop())
+
+    return adversary_hand, deck
+
+
+def get_current_deck(game):
+
     deck = Deck().cards_deck
     # Remove cards that are in the pile
     for card in game.pile:
@@ -20,9 +32,4 @@ def random_hand(number_of_cards, game):
     for card in game.get_current_player_hand():
         deck.remove(card)
 
-    adversary_hand = []
-    for i in range(0, number_of_cards):
-        adversary_hand.append(deck.pop())
-
-    return adversary_hand
-
+    return deck
