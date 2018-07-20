@@ -22,11 +22,12 @@ PLAYER_NAME = 0
 
 
 class GameManager:
-    def __init__(self, playersTypes, games):
+    def __init__(self, playersTypes, games, print_mode=False):
         if len(playersTypes) < 2:
             raise NotEnoughPlayersException
         self.players = self.__init_players(playersTypes)
         self.number_of_games = games
+        self.print_mode = print_mode
 
     def __init_players(self, playersTypes):
         players = {}
@@ -67,7 +68,7 @@ class GameManager:
         """
         if self.number_of_cards_to_draw > self.deck.get_number_of_cards_left():
             cards_to_take = self.deck.deal(self.deck.get_number_of_cards_left())
-            self.players[self.cur_player_index][PLAYER].take_cardsll(cards_to_take)
+            self.players[self.cur_player_index][PLAYER].take_cards(cards_to_take)
             self.number_of_cards_to_draw -= self.deck.get_number_of_cards_left()
             self.__update_deck()
 
@@ -89,11 +90,11 @@ class GameManager:
             # update number of cards to draw
             self.number_of_cards_to_draw = 2 if self.number_of_cards_to_draw == 1 else self.number_of_cards_to_draw + 2
         if action.action_is_plus():
-            self.cur_player_index -= self.progress_direction  # player will get another turn
+            self.another_turn = True  # player will get another turn
         if action.action_is_king():
             # withdraw active plus 2 and get another turn
             self.number_of_cards_to_draw = 1
-            self.cur_player_index -= self.progress_direction  # player will get another turn
+            self.another_turn = True  # player will get another turn
         if action.action_is_draw():
             self.__execute_draw()
         self.pile.extend(action.get_cards())  # add action's card to the pile
@@ -251,6 +252,7 @@ class GameManager:
         self.pile = list()
         self.progress_direction = 1
         self.first_turn = True
+        self.another_turn = False
         self.cur_player_index = 0
         self.__deal_players()
         self.pile.extend(self.deck.deal())
@@ -261,7 +263,9 @@ class GameManager:
         """
         Print end game message and update scoring table.
         """
-        print("\n******\nPlayer %d is the winner\n******\n" % (self.cur_player_index + 1))
+        self.cur_player_index = max(self.cur_player_index, 0)  # final action was king action
+        if self.print_mode:
+            print("\n******\nPlayer %d is the winner\n******\n" % (self.cur_player_index + 1))
         self.players[self.cur_player_index][2] += 1
 
     def __run_single_game(self):
@@ -271,14 +275,18 @@ class GameManager:
         self.__init_state()
         cur_player = self.players[self.cur_player_index][PLAYER]
         while True:
-            print("Player %d turn:" % (self.cur_player_index+1))
-            print("******\nLeading Card: %s\nLeading Color: %s\n******" % (self.pile[-1].get_value(), self.active_color))
+            if self.print_mode:
+                print("Player %d turn:" % (self.cur_player_index+1))
+                print("******\nLeading Card: %s\nLeading Color: %s\n******" % (self.pile[-1].get_value(), self.active_color))
             cur_action = cur_player.choose_action()
             self.__execute_action(cur_action)
             if cur_player.player_is_done() and not cur_action.action_is_plus():
                 self.__update_winner()
                 return
-            cur_player = self.__move_to_next_players_turn()
+            if not self.another_turn:
+                cur_player = self.__move_to_next_players_turn()
+            else:
+                self.another_turn = False
 
     def run_game(self):
         for i in range(self.number_of_games):
@@ -293,8 +301,8 @@ class GameManager:
 
 if __name__ == '__main__':
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
-    players = {"Player1": ["Ido", "H"], "Player2": ["Shachar", "M"]}
-    number_of_games = 3
-    game = GameManager(players, number_of_games)
+    players = {"Player1": ["Ido", "H"], "Player2": ["Shachar", "H"]}
+    number_of_games = 100
+    game = GameManager(players, number_of_games, print_mode=False)
     game.run_game()
     game.print_scoring_table()
