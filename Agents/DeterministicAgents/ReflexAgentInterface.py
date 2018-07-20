@@ -1,5 +1,5 @@
 from TakiGame.Players.PlayerInterface import PlayerInterface
-from TakiGame.DeckStuff.Card import Color
+
 import numpy as np
 
 class HeuristicReflexAgent(PlayerInterface):

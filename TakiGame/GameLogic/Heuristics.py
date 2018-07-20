@@ -1,3 +1,5 @@
+from TakiGame.DeckStuff.Card import Color
+
 def color_heuristic(self, action):
     """
     A simple heuristic that quantify action based on the wanting to finish all the cards of the active color
