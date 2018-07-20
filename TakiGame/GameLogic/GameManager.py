@@ -9,6 +9,7 @@ from TakiGame.GameLogic.Action import Action
 from TakiGame.Players.ManualAgent import ManualAgent
 from Agents.DeterministicAgents.ReflexAgentInterface import HeuristicReflexAgent
 from Agents.DeterministicAgents import Heuristics
+from TakiGame.GameLogic.FullStateTwoPlayer import PartialStateTwoPlayer, FullStateTwoPlayer
 
 
 class NotEnoughPlayersException(Exception):
@@ -267,7 +268,7 @@ class GameManager:
         self.cur_player_index = max(self.cur_player_index, 0)  # final action was king action
         if self.print_mode:
             print("\n******\nPlayer %d is the winner\n******\n" % (self.cur_player_index + 1))
-        self.players[self.cur_player_index][2] += 1
+        self.players[self.cur_player_index][PLAYER_SCORE] += 1
 
     def __run_single_game(self):
         """
@@ -301,6 +302,20 @@ class GameManager:
 
     def get_current_player_hand(self):
         return self.players[self.cur_player_index][PLAYER].get_cards()
+
+    def get_pile(self):
+        return self.pile
+
+    def get_top_card(self):
+        return self.pile[-1]
+
+    def get_state(self):
+        current_player_hand = self.get_current_player_hand()
+        opp_player_hand = self.players[(self.cur_player_index + 1 * self.progress_direction) % len(self.players)][PLAYER].get_cards()
+        if self.players[self.cur_player_index][PLAYER_TYPE] != "MDP":
+            return PartialStateTwoPlayer(current_player_hand, self.get_top_card(), opp_player_hand)
+        else:
+            return FullStateTwoPlayer(current_player_hand, self.get_top_card(), opp_player_hand)
 
 if __name__ == '__main__':
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
