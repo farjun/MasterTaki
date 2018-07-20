@@ -299,6 +299,8 @@ class GameManager:
                                                                           player[PLAYER_TYPE],
                                                                           player[PLAYER_SCORE]))
 
+    def get_current_player_hand(self):
+        return self.players[self.cur_player_index][PLAYER].get_cards()
 
 if __name__ == '__main__':
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
