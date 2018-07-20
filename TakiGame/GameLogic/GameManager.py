@@ -8,6 +8,7 @@ from TakiGame.DeckStuff.TakiDeck import Deck
 from TakiGame.GameLogic.Action import Action
 from TakiGame.Players.ManualAgent import ManualAgent
 from Agents.DeterministicAgents.ReflexAgentInterface import HeuristicReflexAgent
+from Agents.DeterministicAgents import Heuristics
 
 
 class NotEnoughPlayersException(Exception):
@@ -35,7 +36,7 @@ class GameManager:
             if player_details[1] == "M":
                 players[id] = [ManualAgent(player_details[PLAYER_NAME], self), "Manual", 0]
             if player_details[1] == "H":
-                players[id] = [HeuristicReflexAgent(self, [HeuristicReflexAgent.color_heuristic], False),"Heuristic",0]
+                players[id] = [HeuristicReflexAgent(self, [Heuristics.color_heuristic], False),"Heuristic",0]
         return players
 
     def __move_to_next_players_turn(self):

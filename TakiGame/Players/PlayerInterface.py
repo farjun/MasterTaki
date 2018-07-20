@@ -29,6 +29,9 @@ class PlayerInterface:
     def get_number_of_cards(self):
         return len(self.cards)
 
+    def get_cards(self):
+        return self.cards
+
 
 class CardNotInHandException(Exception):
     pass

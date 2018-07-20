@@ -1,5 +1,4 @@
 from TakiGame.Players.PlayerInterface import PlayerInterface
-
 import numpy as np
 
 class HeuristicReflexAgent(PlayerInterface):
@@ -33,7 +32,7 @@ class HeuristicReflexAgent(PlayerInterface):
                 action_score = self._get_action_score_by_mode([h(self,legal_action) for h in self.H], mode)
                 all_legal_actions_scores.append(action_score)
             else:
-                action_score = self._get_action_score_by_mode([h(self,legal_action) for h in self.H], mode)
+                action_score = self._get_action_score_by_mode([h(self,legal_action, self.game, self.cards) for h in self.H], mode)
                 all_legal_actions_scores.append(action_score)
 
         max_score = max(all_legal_actions_scores)
