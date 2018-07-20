@@ -89,11 +89,11 @@ class GameManager:
             # update number of cards to draw
             self.number_of_cards_to_draw = 2 if self.number_of_cards_to_draw == 1 else self.number_of_cards_to_draw + 2
         if action.action_is_plus():
-            self.cur_player_index = self.cur_player_index - self.progress_direction  # player will get another turn
+            self.cur_player_index -= self.progress_direction  # player will get another turn
         if action.action_is_king():
             # withdraw active plus 2 and get another turn
             self.number_of_cards_to_draw = 1
-            self.cur_player_index = self.cur_player_index - self.progress_direction  # player will get another turn
+            self.cur_player_index -= self.progress_direction  # player will get another turn
         if action.action_is_draw():
             self.__execute_draw()
         self.pile.extend(action.get_cards())  # add action's card to the pile

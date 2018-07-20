@@ -18,7 +18,7 @@ class Deck:
         self.cards_deck = list()
         for i in range(NUM_OF_COPIES_FOR_COLOR_CARDS):
             for color in Color:
-                if color is not color.NO_COLOR:
+                if color is not Color.NO_COLOR:
                     for number in Number:
                         self.cards_deck.append(Card(number, color))
 

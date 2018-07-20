@@ -1,5 +1,3 @@
-from typing import List
-
 from TakiGame.DeckStuff.Card import Card, Color
 
 
@@ -8,12 +6,12 @@ class Action:
     action class that defines an action in the taki game
     action order is from first (at index 0) to last (at last index)
     """
-    def __init__(self, cards_to_put: List[Card], no_op=False, change_color=Color.NO_COLOR):
+    def __init__(self, cards_to_put: list, no_op=False, change_color=Color.NO_COLOR):
         self.cards_to_put = cards_to_put
         self.no_op = no_op
         self.change_color = change_color
 
-    def get_cards(self) -> List[Card]:
+    def get_cards(self) -> list:
         return self.cards_to_put
 
     def action_is_draw(self):
