@@ -36,7 +36,8 @@ class Deck:
         shuffle(self.cards_deck)
 
     def set_deck(self, cards):
-        self.cards_deck = shuffle(cards)
+        shuffle(cards)
+        self.cards_deck = cards
 
     def get_number_of_cards_left(self):
         return len(self.cards_deck)
