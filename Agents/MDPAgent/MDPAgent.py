@@ -8,10 +8,15 @@ class MDPAgent(PlayerInterface):
         super().__init__("POMDPAgent", game)
         self.is_fully_observable = True
 
+
     def choose_action(self):
         """
         :return: best action every
         """
         cur_state = self.game.get_cur_state(self.cards, full_state = self.is_fully_observable)
+        
+
+
+
 
 
