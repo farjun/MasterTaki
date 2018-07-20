@@ -47,7 +47,6 @@ class GameManager:
         Change current player index to next player, according to game direction.
         """
         self.cur_player_index = (self.cur_player_index + 1 * self.progress_direction) % len(self.players)
-        return self.players[self.cur_player_index][PLAYER]
 
     def __deal_players(self):
         """
@@ -93,12 +92,9 @@ class GameManager:
         if action.action_is_plus_2():
             # update number of cards to draw
             self.number_of_cards_to_draw = 2 if self.number_of_cards_to_draw == 1 else self.number_of_cards_to_draw + 2
-        if action.action_is_plus():
-            self.another_turn = True  # player will get another turn
         if action.action_is_king():
             # withdraw active plus 2 and get another turn
             self.number_of_cards_to_draw = 1
-            self.another_turn = True  # player will get another turn
         if action.action_is_draw():
             self.__execute_draw()
         self.pile.extend(action.get_cards())  # add action's card to the pile
@@ -257,6 +253,7 @@ class GameManager:
         self.progress_direction = 1
         self.first_turn = True
         self.another_turn = False
+        self.end_game = False
         self.cur_player_index = 0
         self.__deal_players()
         self.pile.extend(self.deck.deal())
@@ -272,25 +269,32 @@ class GameManager:
             print("\n******\nPlayer %d is the winner\n******\n" % (self.cur_player_index + 1))
         self.players[self.cur_player_index][PLAYER_SCORE] += 1
 
+    def run_single_turn(self, cur_action):
+        self.__execute_action(cur_action)
+        if self.players[self.cur_player_index][PLAYER].player_is_done() and not cur_action.action_is_plus():
+            self.__update_winner()
+            self.end_game = True
+        if self.players[self.cur_player_index][PLAYER].player_is_done() and cur_action.action_is_plus():
+            self.__execute_draw()
+        if not self.end_game:
+            self.__move_to_next_players_turn()
+
+    def end_game(self):
+        return self.end_game
+
     def __run_single_game(self):
         """
         Runs single taki game and update scoring table according to game's result.
         """
         self.__init_state()
-        cur_player = self.players[self.cur_player_index][PLAYER]
         while True:
             if self.print_mode:
                 print("Player %d turn:" % (self.cur_player_index+1))
                 print("******\nLeading Card: %s\nLeading Color: %s\n******" % (self.pile[-1].get_value(), self.active_color))
-            cur_action = cur_player.choose_action()
-            self.__execute_action(cur_action)
-            if cur_player.player_is_done() and not cur_action.action_is_plus():
-                self.__update_winner()
+            cur_action = self.players[self.cur_player_index][PLAYER].choose_action()
+            self.run_single_turn(cur_action)
+            if self.end_game:
                 return
-            if not self.another_turn:
-                cur_player = self.__move_to_next_players_turn()
-            else:
-                self.another_turn = False
 
     def run_game(self):
         for i in range(self.number_of_games):
