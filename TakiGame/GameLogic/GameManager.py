@@ -2,6 +2,7 @@ from itertools import permutations
 
 import sys
 
+
 from TakiGame.Players.PlayerInterface import PlayerInterface
 from TakiGame.DeckStuff.Card import Color
 from TakiGame.DeckStuff.TakiDeck import Deck
@@ -30,6 +31,7 @@ class GameManager:
         self.players = self.__init_players(playersTypes)
         self.number_of_games = games
         self.print_mode = print_mode
+        self.deck = None
 
     def __init_players(self, playersTypes):
         players = {}
@@ -37,7 +39,7 @@ class GameManager:
             if player_details[1] == "M":
                 players[id] = [ManualAgent(player_details[PLAYER_NAME], self), "Manual", 0]
             if player_details[1] == "H":
-                players[id] = [HeuristicReflexAgent(self, [Heuristics.color_heuristic], False),"Heuristic",0]
+                players[id] = [HeuristicReflexAgent(self, [Heuristics.color_heuristic], False), "Heuristic", 0]
         return players
 
     def __move_to_next_players_turn(self):
@@ -302,6 +304,12 @@ class GameManager:
 
     def get_current_player_hand(self):
         return self.players[self.cur_player_index][PLAYER].get_cards()
+
+    def set_opp_hand(self, cards):
+        self.players[(self.cur_player_index + 1 * self.progress_direction) % len(self.players)][PLAYER].set_cards(cards)
+
+    def set_deck(self, cards):
+        self.deck = cards
 
     def get_pile(self):
         return self.pile

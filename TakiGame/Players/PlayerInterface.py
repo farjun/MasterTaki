@@ -32,6 +32,9 @@ class PlayerInterface:
     def get_cards(self):
         return self.cards
 
+    def set_cards(self, cards):
+        self.cards = cards
+
 
 class CardNotInHandException(Exception):
     pass
