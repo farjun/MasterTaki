@@ -2,17 +2,18 @@ from itertools import permutations
 
 import sys
 
-
 from TakiGame.Players.PlayerInterface import PlayerInterface
 from TakiGame.DeckStuff.Card import Color
 from TakiGame.DeckStuff.TakiDeck import Deck
 from TakiGame.GameLogic.Action import Action
+
 from TakiGame.Players.ManualAgent import ManualAgent
 from Agents.DeterministicAgents.ReflexAgentInterface import HeuristicReflexAgent
+
 from Agents.DeterministicAgents import Heuristics, StateHeuristics
-from TakiGame.GameLogic.FullStateTwoPlayer import PartialStateTwoPlayer, FullStateTwoPlayer
+from TakiGame.GameLogic.State import PartialStateTwoPlayer, FullStateTwoPlayer
 from TakiGame.GameLogic.LogicExecutor import LogicExecutor
-from Agents.ExpectimaxAgent.ExpectimaxAgent import ExpectimaxAgent, AlphaBetaPruningAgent
+from Agents.ExpectimaxAgent.ExpectimaxAgent import ExpectimaxAgent
 
 
 class NotEnoughPlayersException(Exception):
@@ -45,8 +46,8 @@ class GameManager:
                 players[id] = [HeuristicReflexAgent(self, [Heuristics.color_heuristic], False), "Heuristic", 0]
             if player_details[1] == "E":
                 players[id] = [ExpectimaxAgent(self, [StateHeuristics.color_and_remove_heuristic], 2), "Expectimax", 0]
-            if player_details[1] == "A":
-                players[id] = [AlphaBetaPruningAgent(self, [StateHeuristics.color_and_remove_heuristic], 2), "AlphaBeta", 0]
+            if player_details[1] == 'MDP':
+                players[id] = []
         return players
 
     def __deal_players(self):
@@ -107,8 +108,6 @@ class GameManager:
                 print("Player %d turn:" % (self.cur_player_index+1))
                 print("******\nLeading Card: %s\nLeading Color: %s\n******" % (self.pile[-1].get_value(), self.active_color))
             cur_action = self.players[self.cur_player_index][PLAYER].choose_action()
-            if self.print_mode:
-                print(cur_action)
             self.run_single_turn(cur_action)
             if self.end_game:
                 return
@@ -158,7 +157,7 @@ class GameManager:
 
 if __name__ == '__main__':
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
-    players = [["Ido", "H"], ["Shachar", "A"]]
+    players = [["Ido", "H"], ["Shachar", "E"]]
     number_of_games = 2
     game = GameManager(players, number_of_games, print_mode=True)
     game.run_game()
