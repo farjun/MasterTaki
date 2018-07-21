@@ -2,15 +2,16 @@ from itertools import permutations
 
 import sys
 
-
 from TakiGame.Players.PlayerInterface import PlayerInterface
 from TakiGame.DeckStuff.Card import Color
 from TakiGame.DeckStuff.TakiDeck import Deck
 from TakiGame.GameLogic.Action import Action
+
 from TakiGame.Players.ManualAgent import ManualAgent
 from Agents.DeterministicAgents.ReflexAgentInterface import HeuristicReflexAgent
+
 from Agents.DeterministicAgents import Heuristics, StateHeuristics
-from TakiGame.GameLogic.FullStateTwoPlayer import PartialStateTwoPlayer, FullStateTwoPlayer
+from TakiGame.GameLogic.State import PartialStateTwoPlayer, FullStateTwoPlayer
 from TakiGame.GameLogic.LogicExecutor import LogicExecutor
 from Agents.ExpectimaxAgent.ExpectimaxAgent import ExpectimaxAgent
 
@@ -45,6 +46,8 @@ class GameManager:
                 players[id] = [HeuristicReflexAgent(self, [Heuristics.color_heuristic], False), "Heuristic", 0]
             if player_details[1] == "E":
                 players[id] = [ExpectimaxAgent(self, [StateHeuristics.color_and_remove_heuristic], 2), "Expectimax", 0]
+            if player_details[1] == 'MDP':
+                players[id] = []
         return players
 
     def __deal_players(self):

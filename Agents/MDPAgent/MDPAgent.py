@@ -1,4 +1,5 @@
 from TakiGame.Players.PlayerInterface import PlayerInterface
+import Agents.MDPAgent.QlearningAlgorithem as QlearningAlgorithem
 from TakiGame.DeckStuff.Card import Color
 import numpy as np
 
@@ -6,6 +7,7 @@ import numpy as np
 class MDPAgent(PlayerInterface):
     def __init__(self, game):
         super().__init__("POMDPAgent", game)
+        q_learning_agent = QlearningAlgorithem.QLearningAgent()
         self.is_fully_observable = True
 
 
