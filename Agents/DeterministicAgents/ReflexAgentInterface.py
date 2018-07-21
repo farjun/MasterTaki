@@ -29,10 +29,10 @@ class HeuristicReflexAgent(PlayerInterface):
         all_legal_actions_scores = list()
         for legal_action in all_legal_actions:
             if self.parameter_learning: # todo I don't understand what it means so for now I have assign it as false
-                action_score = self._get_action_score_by_mode([h(self,legal_action) for h in self.H], mode)
+                action_score = self._get_action_score_by_mode([h(legal_action) for h in self.H], mode)
                 all_legal_actions_scores.append(action_score)
             else:
-                action_score = self._get_action_score_by_mode([h(self,legal_action, self.game, self.cards) for h in self.H], mode)
+                action_score = self._get_action_score_by_mode([h(legal_action, self.game, self.cards) for h in self.H], mode)
                 all_legal_actions_scores.append(action_score)
 
         max_score = max(all_legal_actions_scores)

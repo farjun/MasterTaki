@@ -97,6 +97,9 @@ class Card:
     def __eq__(self, other):
         return self.color == other.color and self.number_or_special == other.number_or_special
 
+    def __hash__(self):
+        return hash((self.color, self.number_or_special))
+
     def __repr__(self):
         return "<Card: %s\n color: %s>" % (self.number_or_special, self.color)
 

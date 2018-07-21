@@ -1,4 +1,4 @@
-from TakiGame.DeckStuff.Card import Card, Color
+from TakiGame.DeckStuff.Card import Color
 
 
 class Action:
@@ -44,8 +44,10 @@ class Action:
     def action_is_king(self):
         if self.action_is_draw():
             return False
-        last_card = self.cards_to_put[-1]
-        return last_card.is_king()
+        for card in self.cards_to_put:
+            if card.is_king():
+                return True
+        return False
 
     def action_is_change_color(self):
         if self.action_is_draw():
@@ -53,8 +55,14 @@ class Action:
         last_card = self.cards_to_put[-1]
         return last_card.is_change_color()
 
-    def action_get_change_color(self):
+    def get_change_color(self):
         return self.change_color
+
+    def get_active_color(self):
+        return self.change_color if self.action_is_change_color() else self.cards_to_put[-1].get_color()
+
+    def get_top_card(self):
+        return self.cards_to_put[-1]
 
     def begin_with_super_taki(self):
         if self.action_is_draw():
@@ -73,4 +81,10 @@ class Action:
         return repr(self.cards_to_put)
 
     def __eq__(self, other):
-        return other.get_cards() == self.get_cards() and self.action_get_change_color() == other.action_get_change_color()
+        return other.get_cards() == self.get_cards() and self.get_change_color() == other.get_change_color()
+
+    def __hash__(self):
+        return hash((tuple(self.cards_to_put), self.change_color))
+
+    def __add__(self, other):
+        return Action(self.cards_to_put + other.cards_to_put, no_op=False, change_color=other.change_color)
