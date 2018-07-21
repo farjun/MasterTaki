@@ -11,6 +11,9 @@ class TwoPlayerState(object):
     def get_top_card(self):
         return self.top_card
 
+    def get_other_player_info(self):
+        return None
+
 
 class FullStateTwoPlayer(TwoPlayerState):
     def __init__(self, cur_players_cards, top_card, other_player_cards):
