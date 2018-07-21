@@ -13,7 +13,7 @@ from Agents.DeterministicAgents.ReflexAgentInterface import HeuristicReflexAgent
 from Agents.DeterministicAgents import Heuristics, StateHeuristics
 from TakiGame.GameLogic.State import PartialStateTwoPlayer, FullStateTwoPlayer
 from TakiGame.GameLogic.LogicExecutor import LogicExecutor
-from Agents.ExpectimaxAgent.ExpectimaxAgent import ExpectimaxAgent
+from Agents.ExpectimaxAgent.ExpectimaxAgent import ExpectimaxAgent,AlphaBetaPruningAgent
 
 
 class NotEnoughPlayersException(Exception):
@@ -45,6 +45,8 @@ class GameManager:
             if player_details[1] == "H":
                 players[id] = [HeuristicReflexAgent(self, [Heuristics.color_heuristic], False), "Heuristic", 0]
             if player_details[1] == "E":
+                players[id] = [AlphaBetaPruningAgent(self, [StateHeuristics.color_and_remove_heuristic], 2), "AlphaBetaPruning", 0]
+            if player_details[1] == "A":
                 players[id] = [ExpectimaxAgent(self, [StateHeuristics.color_and_remove_heuristic], 2), "Expectimax", 0]
             if player_details[1] == 'MDP':
                 players[id] = []
@@ -157,7 +159,7 @@ class GameManager:
 
 if __name__ == '__main__':
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
-    players = [["Ido", "H"], ["Shachar", "E"]]
+    players = [["Ido", "H"], ["Shachar", "A"]]
     number_of_games = 2
     game = GameManager(players, number_of_games, print_mode=True)
     game.run_game()
