@@ -3,15 +3,17 @@ import copy
 import scipy.special as scipy
 import Probabilities.Probabilities as pr
 from util import Counter
+from TakiGame.Players.PlayerInterface import PlayerInterface
 
 NUM_OF_ITERATIONS = 10
 MAX_SCORE = 1000
 MIN_SCORE = 0
 
 
-class ExpectimaxAgent:
+class ExpectimaxAgent(PlayerInterface):
 
-    def __init__(self, evaluation_function, depth=2):
+    def __init__(self,game, evaluation_function, depth=2):
+        super().__init__("ExpectimaxAgent", game)
         self.evaluation_function = evaluation_function
         self.depth = depth
 
@@ -76,8 +78,7 @@ class ExpectimaxAgent:
             current_game.run_single_turn(action)
             # In case the action will lead to the end of the game then return a predetermined score and action
             if current_game.end_game():
-                # todo need to consult about this branch, do I need to append it to future_scores? or return just the score?
-                return end_game_score, action
+                return end_game_score
             future_scores.append(self.recursive_expectimax(current_game.get_state(),
                                                            depth, not agent)[0])
 
@@ -122,6 +123,9 @@ class ExpectimaxAgent:
         # We chose to return the action which occurred the most
         return actions.argMax()
 
+    def choose_action(self):
+        current_game = copy.deepcopy(self.game)
+        return self.recursive_expectimax_on_number_of_hands(current_game)
 
 
 

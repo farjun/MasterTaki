@@ -9,9 +9,10 @@ from TakiGame.DeckStuff.TakiDeck import Deck
 from TakiGame.GameLogic.Action import Action
 from TakiGame.Players.ManualAgent import ManualAgent
 from Agents.DeterministicAgents.ReflexAgentInterface import HeuristicReflexAgent
-from Agents.DeterministicAgents import Heuristics
+from Agents.DeterministicAgents import Heuristics, StateHeuristics
 from TakiGame.GameLogic.FullStateTwoPlayer import PartialStateTwoPlayer, FullStateTwoPlayer
 from TakiGame.GameLogic.LogicExecutor import LogicExecutor
+from Agents.ExpectimaxAgent.ExpectimaxAgent import ExpectimaxAgent
 
 
 class NotEnoughPlayersException(Exception):
@@ -42,6 +43,8 @@ class GameManager:
                 players[id] = [ManualAgent(player_details[PLAYER_NAME], self), "Manual", 0]
             if player_details[1] == "H":
                 players[id] = [HeuristicReflexAgent(self, [Heuristics.color_heuristic], False), "Heuristic", 0]
+            if player_details[1] == "E":
+                players[id] = [ExpectimaxAgent(self, [StateHeuristics.color_heuristic], False), "Heuristic", 0]
         return players
 
     def __deal_players(self):
@@ -151,7 +154,7 @@ class GameManager:
 
 if __name__ == '__main__':
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
-    players = {"Player1": ["Ido", "H"], "Player2": ["Shachar", "H"]}
+    players = {"Player1": ["Ido", "M"], "Player2": ["Shachar", "E"]}
     number_of_games = 200
     game = GameManager(players, number_of_games, print_mode=False)
     game.run_game()
