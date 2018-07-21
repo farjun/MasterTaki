@@ -1,5 +1,4 @@
 
-from TakiGame.GameLogic import GameManager
 from TakiGame.DeckStuff.TakiDeck import Deck
 
 

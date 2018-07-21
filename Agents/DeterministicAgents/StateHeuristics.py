@@ -14,3 +14,10 @@ def color_heuristic(state):
         return 1000 #todo not really sure about this
     counter = len([card for card in player_hand if card.color == state.get_top_card().color])
     return (counter/number_of_cards) * 100
+
+
+def remove_cards_heuristic(state):
+    return 1/len(state.get_cur_player_cards()) *100
+
+def color_and_remove_heuristic(state):
+    return 0.8 * remove_cards_heuristic(state) + 0.2 * color_heuristic(state)

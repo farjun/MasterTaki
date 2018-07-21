@@ -38,13 +38,13 @@ class GameManager:
 
     def __init_players(self, playersTypes):
         players = {}
-        for id, player_details in enumerate(playersTypes.values()):
+        for id, player_details in enumerate(playersTypes):
             if player_details[1] == "M":
                 players[id] = [ManualAgent(player_details[PLAYER_NAME], self), "Manual", 0]
             if player_details[1] == "H":
                 players[id] = [HeuristicReflexAgent(self, [Heuristics.color_heuristic], False), "Heuristic", 0]
             if player_details[1] == "E":
-                players[id] = [ExpectimaxAgent(self, [StateHeuristics.color_heuristic], False), "Heuristic", 0]
+                players[id] = [ExpectimaxAgent(self, [StateHeuristics.color_and_remove_heuristic], 2), "Expectimax", 0]
         return players
 
     def __deal_players(self):
@@ -69,7 +69,7 @@ class GameManager:
         Returns list of other players number of cards in hand, sorting from next player to last player.
         :return: list of other players number of cards in hand, sorting from next player to last player.
         """
-        number_of_cards = [self.players[(self.cur_player_index + i * self.progress_direction) % len(self.players)].get_number_of_cards()
+        number_of_cards = [self.players[(self.cur_player_index + i * self.progress_direction) % len(self.players)][PLAYER].get_number_of_cards()
                            for i in range(1, len(self.players))]
         return number_of_cards
 
@@ -89,10 +89,10 @@ class GameManager:
         self.active_color = self.pile[-1].get_color()
         self.number_of_cards_to_draw = 2 if self.pile[-1].is_plus_2() else 1  # start the game with plus 2
 
-    def run_single_turn(self, cur_action):
-        self.logic.run_single_turn(cur_action)
+    def run_single_turn(self, cur_action, simulate = False):
+        self.logic.run_single_turn(cur_action, simulate)
 
-    def end_game(self):
+    def is_end_game(self):
         return self.end_game
 
     def __run_single_game(self):
@@ -154,8 +154,8 @@ class GameManager:
 
 if __name__ == '__main__':
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
-    players = {"Player1": ["Ido", "M"], "Player2": ["Shachar", "E"]}
-    number_of_games = 200
-    game = GameManager(players, number_of_games, print_mode=False)
+    players = [["Ido", "H"], ["Shachar", "E"]]
+    number_of_games = 2
+    game = GameManager(players, number_of_games, print_mode=True)
     game.run_game()
     game.print_scoring_table()

@@ -29,7 +29,7 @@ class ExpectimaxAgent(PlayerInterface):
         """
         # At the depth zero return the score
         if depth == 0:
-            return self.evaluation_function(game.get_state()), None
+            return self.evaluation_function[0](game.get_state()), None
         # If it is our turn
         game_state = game.get_state()
         cards = game.get_current_player_hand()
@@ -39,9 +39,9 @@ class ExpectimaxAgent(PlayerInterface):
 
             # In case it's the end of the recursion branch
             if not len(legal_actions):
-                return self.evaluation_function(game_state), None
+                return self.evaluation_function[0](game_state), None
 
-            future_scores = self.operate_actions_in_a_single_depth(legal_actions, game, depth, not agent, MAX_SCORE)
+            future_scores = self.operate_actions_in_a_single_depth(legal_actions, game, depth, agent, MAX_SCORE)
 
             # Return the max score and the action
             argmax_score = np.argmax(future_scores)
@@ -51,15 +51,13 @@ class ExpectimaxAgent(PlayerInterface):
 
             # In case it's the end of the recursion branch
             if not len(legal_actions):
-                return self.evaluation_function(game_state), None
+                return self.evaluation_function[0](game_state), None
             # Return the mean the averaged score
 
-            future_scores = self.operate_actions_in_a_single_depth(legal_actions, game, depth - 1, not agent, MIN_SCORE)
+            future_scores = self.operate_actions_in_a_single_depth(legal_actions, game, depth - 1, agent, MIN_SCORE)
             return np.mean(future_scores), None
 
-
-
-    def operate_actions_in_a_single_depth(self, legal_actions, game,depth, agent,end_game_score):
+    def operate_actions_in_a_single_depth(self, legal_actions, game, depth, agent, end_game_score):
         """
         Go through all of the legal actions i.e given a state perform all of the legal actions and continue
         the recursive function from the state s' <- s,a
@@ -75,11 +73,11 @@ class ExpectimaxAgent(PlayerInterface):
         for action in legal_actions:
             # Play the agent turn
             current_game = copy.deepcopy(game)
-            current_game.run_single_turn(action)
+            current_game.run_single_turn(action, True)
             # In case the action will lead to the end of the game then return a predetermined score and action
-            if current_game.end_game():
-                return end_game_score
-            future_scores.append(self.recursive_expectimax(current_game.get_state(),
+            if current_game.is_end_game():
+                return [end_game_score]
+            future_scores.append(self.recursive_expectimax(current_game,
                                                            depth, not agent)[0])
 
         return future_scores
@@ -97,7 +95,7 @@ class ExpectimaxAgent(PlayerInterface):
 
         # Get the opponent hand
         hand, deck = pr.random_hand(opponent_num_of_cards, game)
-        set_of_hands.add(hand)
+        set_of_hands.add(tuple(hand))
         deck_size = len(deck)
 
         # Achieve the number of iterations possible
@@ -115,16 +113,20 @@ class ExpectimaxAgent(PlayerInterface):
 
             # Get the next hand
             hand, deck = pr.random_hand(opponent_num_of_cards, game)
-            while(hand in set_of_hands):
+            while(tuple(hand) in set_of_hands):
                 hand, deck = pr.random_hand(opponent_num_of_cards, game)
 
-            set_of_hands.add(hand)
+            set_of_hands.add(tuple(hand))
 
         # We chose to return the action which occurred the most
         return actions.argMax()
 
     def choose_action(self):
         current_game = copy.deepcopy(self.game)
+        legal_actions = current_game.get_legal_actions(current_game.get_current_player_hand())
+        if len(legal_actions) == 1:
+            # only possible action is draw card, so draw card
+            return legal_actions[0]
         return self.recursive_expectimax_on_number_of_hands(current_game)
 
 
