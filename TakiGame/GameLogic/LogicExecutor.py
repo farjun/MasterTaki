@@ -114,7 +114,10 @@ class LogicExecutor:
         :param color: color for open taki move.
         :return: list of every possible open taki move from the given cards and color.
         """
-        current_color_cards = [card for card in player_cards if card.get_color() is color and not card.is_taki_card(color)]
+        if color is Color.NO_COLOR:
+            current_color_cards = [card for card in player_cards if card.get_color() is self.game.active_color and not card.is_taki_card(color)]
+        else:
+            current_color_cards = [card for card in player_cards if card.get_color() is color and not card.is_taki_card(color)]
         taki_cards = [card for card in player_cards if card.is_taki_card(color)]
         no_color_cards = [card for card in player_cards if
                           card.get_color() is Color.NO_COLOR and not card.is_taki_card(Color.NO_COLOR)]
