@@ -1,11 +1,10 @@
 from TakiGame.GameLogic.Action import Action
-from TakiGame.GameLogic.GameManager import GameManager
 
 class PlayerInterface:
     """
     just override get action with a class inheriting from this interface
     """
-    def __init__(self, name, game : GameManager):
+    def __init__(self, name, game):
         self.name = name
         self.cards = list()
         self.game = game

@@ -2,7 +2,6 @@ from itertools import permutations
 
 import sys
 
-from TakiGame.Players.PlayerInterface import PlayerInterface
 from TakiGame.DeckStuff.Card import Color
 from TakiGame.DeckStuff.TakiDeck import Deck
 from TakiGame.GameLogic.Action import Action
@@ -13,7 +12,8 @@ from Agents.DeterministicAgents.ReflexAgentInterface import HeuristicReflexAgent
 from Agents.DeterministicAgents import Heuristics, StateHeuristics
 from TakiGame.GameLogic.State import PartialStateTwoPlayer, FullStateTwoPlayer
 from TakiGame.GameLogic.LogicExecutor import LogicExecutor
-from Agents.ExpectimaxAgent.ExpectimaxAgent import ExpectimaxAgent,AlphaBetaPruningAgent
+from Agents.TreeBasedAgents.AlphaBetaPruningAgent import AlphaBetaPruningAgent
+from Agents.TreeBasedAgents.ExpectimaxAgent import ExpectimaxAgent
 
 
 class NotEnoughPlayersException(Exception):
@@ -44,10 +44,10 @@ class GameManager:
                 players[id] = [ManualAgent(player_details[PLAYER_NAME], self), "Manual", 0]
             if player_details[1] == "H":
                 players[id] = [HeuristicReflexAgent(self, [Heuristics.color_heuristic], False), "Heuristic", 0]
-            if player_details[1] == "E":
-                players[id] = [AlphaBetaPruningAgent(self, [StateHeuristics.color_and_remove_heuristic], 2), "AlphaBetaPruning", 0]
             if player_details[1] == "A":
-                players[id] = [ExpectimaxAgent(self, [StateHeuristics.color_and_remove_heuristic], 2), "Expectimax", 0]
+                players[id] = [AlphaBetaPruningAgent(self, [StateHeuristics.weight_heuristic], 2), "AlphaBetaPruning", 0]
+            if player_details[1] == "E":
+                players[id] = [ExpectimaxAgent(self, [StateHeuristics.weight_heuristic], 2), "Expectimax", 0]
             if player_details[1] == 'MDP':
                 players[id] = []
         return players
@@ -95,6 +95,9 @@ class GameManager:
         self.number_of_cards_to_draw = 2 if self.pile[-1].is_plus_2() else 1  # start the game with plus 2
 
     def run_single_turn(self, cur_action, simulate = False):
+
+        if not simulate:
+            print(cur_action)
         self.logic.run_single_turn(cur_action, simulate)
 
     def is_end_game(self):
