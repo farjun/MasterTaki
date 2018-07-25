@@ -58,6 +58,7 @@ class GameManager:
         :return:
         """
         for player in self.players.values():
+            player[PLAYER].set_cards([])
             hand = self.deck.deal(NUM_OF_CARDS_TO_DEAL)
             player[PLAYER].take_cards(hand)
 
@@ -95,9 +96,6 @@ class GameManager:
         self.number_of_cards_to_draw = 2 if self.pile[-1].is_plus_2() else 1  # start the game with plus 2
 
     def run_single_turn(self, cur_action, simulate = False):
-
-        if not simulate:
-            print(cur_action)
         self.logic.run_single_turn(cur_action, simulate)
 
     def is_end_game(self):
@@ -163,7 +161,7 @@ class GameManager:
 if __name__ == '__main__':
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
     players = [["Ido", "H"], ["Shachar", "A"]]
-    number_of_games = 2
+    number_of_games = 150
     game = GameManager(players, number_of_games, print_mode=True)
     game.run_game()
     game.print_scoring_table()

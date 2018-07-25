@@ -8,6 +8,9 @@ class Color(Enum):
     BLUE = 3
     YELLOW = 4
 
+    def __lt__(self, other):
+        return self.value < other.value
+
 
 class Number(Enum):
     ONE = 1
@@ -20,6 +23,9 @@ class Number(Enum):
     EIGHT = 8
     NINE = 9
 
+    def __lt__(self, other):
+        return self.value < other.value
+
 
 class SpecialWithColor(Enum):
     PLUS_2 = 1
@@ -27,13 +33,18 @@ class SpecialWithColor(Enum):
     STOP = 3
     CHANGE_DIRECTION = 4
     TAKI = 5
-    # CRAZY_CARD = 6 - which card is that?
+
+    def __lt__(self, other):
+        return self.value < other.value
 
 
 class SpecialNoColor(Enum):
     CHANGE_COLOR = 1
     SUPER_TAKI = 2
     KING = 3
+
+    def __lt__(self, other):
+        return self.value < other.value
 
 
 # SPECIAL_CARDS_WHICH_HAVE_NO_MORE_CARDS_TO_PUT_ON = {SpecialNoColor.CHANGE_COLOR, SpecialWithColor.CRAZY_CARD,
@@ -46,22 +57,6 @@ class Card:
     def __init__(self, number_or_special, color: Color):
         self.color = color
         self.number_or_special = number_or_special
-
-    def can_have_more_cards_on_top(self):
-        return self.number_or_special in SPECIAL_CARDS_WHICH_HAVE_MORE_CARDS_TO_PUT_ON
-        # return self.number_or_special not in SPECIAL_CARDS_WHICH_HAVE_NO_MORE_CARDS_TO_PUT_ON
-
-    def can_be_placed_on(self, other):
-        if self.number_or_special in Number or self.number_or_special in SpecialWithColor:
-            return self.color == other.color
-
-        if self.number_or_special in SpecialNoColor:
-            return True
-
-        if self.number_or_special == other.number_or_special:
-            return True
-
-        return False  # check if we ever get here and why
 
     def is_taki_card(self, color):
         return self.number_or_special is SpecialNoColor.SUPER_TAKI or \
@@ -96,6 +91,19 @@ class Card:
 
     def __eq__(self, other):
         return self.color == other.color and self.number_or_special == other.number_or_special
+
+    def __lt__(self, other):
+        if self.color < other.color:
+            return True
+        if self.color == other.color:
+            if isinstance(self.number_or_special, type(other.number_or_special)):
+                return self.number_or_special < other.number_or_special
+            if isinstance(self.number_or_special, Number):
+                return True
+            if isinstance(other.number_or_special, Number):
+                return False
+            return isinstance(self.number_or_special, SpecialWithColor)
+        return False
 
     def __hash__(self):
         return hash((self.color, self.number_or_special))

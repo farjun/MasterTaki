@@ -1,10 +1,10 @@
-from itertools import permutations
+from itertools import permutations, combinations
 
 from TakiGame.DeckStuff.Card import Color
 from TakiGame.GameLogic.Action import Action
-#from TakiGame.GameLogic.GameManager import GameManager
 
 PLAYER_SCORE = 2
+
 
 class LogicExecutor:
     def __init__(self, game):
@@ -78,13 +78,14 @@ class LogicExecutor:
     def __search_for_plus_2(self, player_cards):
         return [Action([card]) for card in player_cards if card.is_plus_2()]
 
-    def __subsets(self, same_color_cards):
+    def __subsets_comb(self, same_color_cards):
         """
-        Gets every subset of the given color cards, for open taki move purposes.
+        Gets every combination of the given color cards, for open taki move purposes.
         :param same_color_cards:
         """
         for cardinality in range(1, (len(same_color_cards) + 1)):
-            yield from permutations(same_color_cards, cardinality)
+            yield from combinations(same_color_cards, cardinality)
+
 
     def __end_taki_with_no_color_actions(self, current_subset, no_color_cards):
         """
@@ -123,7 +124,10 @@ class LogicExecutor:
                           card.get_color() is Color.NO_COLOR and not card.is_taki_card(Color.NO_COLOR)]
         subsets = []
         for i in range(len(taki_cards)):
-            current_subset = [Action([taki_cards[i]] + list(s)) for s in self.__subsets(current_color_cards)]  # add the taki card
+            relevent_taki_sets = [list(s) for s in self.__subsets_comb(current_color_cards)]  # get all sets
+            # change only the last card in each taki set and sort the rest to avoid redundancy
+            taki_combinations = [sorted(s[:i] + s[i+1:]) + [s[i]] for s in relevent_taki_sets for i in range(len(s))]
+            current_subset = [Action([taki_cards[i]] + s) for s in taki_combinations]  # add the taki card
             subsets.extend(current_subset)
             # open taki in any color can end with no color card, add those options to every existing option
             subsets.extend(self.__end_taki_with_no_color_actions(current_subset, no_color_cards))
@@ -230,11 +234,13 @@ class LogicExecutor:
         Print end game message and update scoring table.
         """
         self.game.cur_player_index = max(self.game.cur_player_index, 0)  # final action was king action
-        if self.game.print_mode and not simoulate:
+        if not simoulate:
             print("\n******\nPlayer %d is the winner\n******\n" % (self.game.cur_player_index + 1))
         self.game.players[self.game.cur_player_index][PLAYER_SCORE] += 1
 
     def run_single_turn(self, cur_action, simoulate = False):
+        if not simoulate and self.game.print_mode:
+            print(cur_action)
         self.__execute_action(cur_action)
         if self.game.get_current_player().player_is_done() and not self.game.get_top_card().is_plus():
             self.__update_winner(simoulate)
