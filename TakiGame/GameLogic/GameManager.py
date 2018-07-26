@@ -109,8 +109,8 @@ class GameManager:
         while True:
             if self.print_mode:
                 print("Player %d turn:" % (self.cur_player_index+1))
-                print("******\nLeading Card: %s\nLeading Color: %s\n******" % (self.pile[-1].get_value(), self.active_color))
-            cur_action = self.players[self.cur_player_index][PLAYER].choose_action()
+                print("******\nLeading Card: %s\nLeading Color: %s\n******" % (self._top_card().get_value(), self.active_color))
+            cur_action = self._get_cur_palyer().choose_action()
             self.run_single_turn(cur_action)
             if self.end_game:
                 return
@@ -124,6 +124,11 @@ class GameManager:
             print("Player Name: %s\nPlayer Type: %s\nPlayer Score: %s" % (player[PLAYER].get_name(),
                                                                           player[PLAYER_TYPE],
                                                                            player[PLAYER_SCORE]))
+    def _top_card(self):
+        return self.pile[-1]
+
+    def _get_cur_palyer(self):
+        return self.players[self.cur_player_index][PLAYER]
 
     def get_current_player(self):
         return self.players[self.cur_player_index][PLAYER]
@@ -160,7 +165,7 @@ class GameManager:
 
 if __name__ == '__main__':
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
-    players = [["Ido", "H"], ["Shachar", "A"]]
+    players = [["Ido", "H"], ["Shachar", "H"]]
     number_of_games = 150
     game = GameManager(players, number_of_games, print_mode=True)
     game.run_game()
