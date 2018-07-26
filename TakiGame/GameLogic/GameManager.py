@@ -110,7 +110,7 @@ class GameManager:
             if self.print_mode:
                 print("Player %d turn:" % (self.cur_player_index+1))
                 print("******\nLeading Card: %s\nLeading Color: %s\n******" % (self._top_card().get_value(), self.active_color))
-            cur_action = self._get_cur_palyer().choose_action()
+            cur_action = self.get_current_player().choose_action()
             self.run_single_turn(cur_action)
             if self.end_game:
                 return
@@ -126,9 +126,6 @@ class GameManager:
                                                                            player[PLAYER_SCORE]))
     def _top_card(self):
         return self.pile[-1]
-
-    def _get_cur_palyer(self):
-        return self.players[self.cur_player_index][PLAYER]
 
     def get_current_player(self):
         return self.players[self.cur_player_index][PLAYER]
