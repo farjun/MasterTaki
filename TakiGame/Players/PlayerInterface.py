@@ -17,6 +17,9 @@ class PlayerInterface:
     def choose_action(self)->Action:
         pass
 
+    def update(self):
+        return None
+
     def player_is_done(self):
         return len(self.cards) == 0
 
