@@ -85,7 +85,6 @@ class MDPAgent(PlayerInterface):
         next_action= self.getPolicy(nextState)
         self.Q_values[(state, action)] += self.alpha*(reward+self.discount*self.getQValue(nextState,next_action)- self.getQValue(state, action))
 
-        # util.raiseNotDefined()
 
     def getLegalActions(self, state):
         cur_cards = state.get_cur_player_cards()

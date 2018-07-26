@@ -123,7 +123,7 @@ class GameManager:
         for player in self.players.values():
             print("Player Name: %s\nPlayer Type: %s\nPlayer Score: %s" % (player[PLAYER].get_name(),
                                                                           player[PLAYER_TYPE],
-                                                                          player[PLAYER_SCORE]))
+                                                                           player[PLAYER_SCORE]))
 
     def get_current_player(self):
         return self.players[self.cur_player_index][PLAYER]
