@@ -27,6 +27,11 @@ class MDPAgent(PlayerInterface):
         :return: best action we can do
         """
         cur_state = self.game.get_state()
+        all_leagal_actions = self.game.logic.get_legal_actions_from_state(cur_state)
+        if flipCoin(self.epsilon):
+            return random.choice(all_leagal_actions)
+        else:
+            return self.getPolicy(cur_state)
 
 
     def getQValue(self, state, action):
@@ -58,36 +63,12 @@ class MDPAgent(PlayerInterface):
           you should return None.
         """
         "*** YOUR CODE HERE ***"
-        legal_actions = self.getLegalActions(state)
+        legal_actions = self.game.logic.get_leagal_actions_from_state(state)
         if len(legal_actions)  ==0:
-            return None
-        q_valuse =np.asarray([self.getQValue(state, action) for action in legal_actions])
-        max_index= np.where(q_valuse== np.max(q_valuse)) #find all indexes of max element
+            return None # change to take card
+        q_valuse = np.asarray([self.getQValue(state, action) for action in legal_actions])
+        max_index= np.where(q_valuse == np.max(q_valuse)) #find all indexes of max element
         return legal_actions[random.choice(max_index[0])] #get random from max
-        # util.raiseNotDefined()
-
-
-
-    def getAction(self, state):
-        """
-          Compute the action to take in the current state.  With
-          probability self.epsilon, we should take a random action and
-          take the best policy action otherwise.  Note that if there are
-          no legal actions, which is the case at the terminal state, you
-          should choose None as the action.
-
-          HINT: You might want to use util.flipCoin(prob)
-          HINT: To pick randomly from a list, use random.choice(list)
-        """
-        # Pick Action
-        legal_actions = self.getLegalActions(state)
-        "*** YOUR CODE HERE ***"
-        if len(legal_actions) == 0:
-            return None
-        if flipCoin(self.epsilon):
-            return random.choice(legal_actions)
-        return self.getPolicy(state) #best chose
-
 
     def update(self, state, action, nextState, reward):
         """

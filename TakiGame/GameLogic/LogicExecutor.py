@@ -2,6 +2,7 @@ from itertools import permutations, combinations
 
 from TakiGame.DeckStuff.Card import Color
 from TakiGame.GameLogic.Action import Action
+from TakiGame.GameLogic.State import FullStateTwoPlayer
 
 PLAYER_SCORE = 2
 
@@ -202,6 +203,9 @@ class LogicExecutor:
                 another_turn_actions.extend([action + another_action for another_action in
                                              self.get_legal_actions(player_cards_left, action.get_top_card(), action.get_active_color(), False)])
         return another_turn_actions
+
+    def get_leagal_actions_from_state(self,state:FullStateTwoPlayer):
+        return self.get_legal_actions(state.cur_players_cards)
 
     def get_legal_actions(self, player_cards, card_on_top_of_pile = None, active_color = None, include_draw = True):
         """
