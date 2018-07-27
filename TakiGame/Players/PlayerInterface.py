@@ -17,7 +17,7 @@ class PlayerInterface:
     def choose_action(self)->Action:
         pass
 
-    def update(self):
+    def update(self, state, action, nextState):
         return None
 
     def player_is_done(self):

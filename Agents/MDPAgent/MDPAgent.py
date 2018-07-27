@@ -70,7 +70,7 @@ class MDPAgent(PlayerInterface):
         max_index= np.where(q_valuse == np.max(q_valuse)) #find all indexes of max element
         return legal_actions[random.choice(max_index[0])] #get random from max
 
-    def update(self, state, action, nextState, reward):
+    def update(self, state, action, nextState):
         """
           The parent class calls this to observe a
           state = action => nextState and reward transition.
