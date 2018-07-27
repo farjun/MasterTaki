@@ -182,5 +182,5 @@ if __name__ == '__main__':
     game.run_game()
     game.print_scoring_table()
 
-    print(game.players[1][PLAYER].Q_values)
+    print(len(game.players[1][PLAYER].Q_values))
 
