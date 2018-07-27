@@ -233,22 +233,22 @@ class LogicExecutor:
         legal_actions.extend(self.__add_another_turn_actions(player_cards, legal_actions))
         return sorted(list(set(legal_actions)), key=lambda x: len(x.get_cards()))
 
-    def __update_winner(self, simoulate = True):
+    def __update_winner(self, simoulate=False):
         """
         Print end game message and update scoring table.
         """
         self.game.cur_player_index = max(self.game.cur_player_index, 0)  # final action was king action
         if not simoulate:
             print("\n******\nPlayer %d is the winner\n******\n" % (self.game.cur_player_index + 1))
-        self.game.players[self.game.cur_player_index][PLAYER_SCORE] += 1
+            self.game.players[self.game.cur_player_index][PLAYER_SCORE] += 1
+        self.game.end_game = True
 
-    def run_single_turn(self, cur_action, simoulate = False):
+    def run_single_turn(self, cur_action, simoulate=False):
         if not simoulate and self.game.print_mode:
             print(cur_action)
         self.__execute_action(cur_action)
         if self.game.get_current_player().player_is_done() and not self.game.get_top_card().is_plus():
             self.__update_winner(simoulate)
-            self.game.end_game = True
         if not self.game.end_game:
             self.__move_to_next_players_turn()
 

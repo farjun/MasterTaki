@@ -6,9 +6,10 @@ from util import Counter
 from TakiGame.Players.PlayerInterface import PlayerInterface
 import sys
 
-NUM_OF_ITERATIONS = 5
+NUM_OF_ITERATIONS = 10
 MAX_SCORE = 1000
 MIN_SCORE = 0
+
 
 class TreeBasedAgent(PlayerInterface):
 
@@ -35,9 +36,9 @@ class TreeBasedAgent(PlayerInterface):
         deck_size = len(deck)
 
         # Achieve the number of iterations possible
-        final_num_of_iterations = min(NUM_OF_ITERATIONS, scipy.binom(deck_size + opponent_num_of_cards,
-                                                                     opponent_num_of_cards))
-        print("number of actions: ",len(game.get_legal_actions(game.get_current_player_hand())))
+        final_num_of_iterations = int(min(NUM_OF_ITERATIONS, scipy.binom(deck_size + opponent_num_of_cards,
+                                                                     opponent_num_of_cards)))
+        print("number of actions: ", len(game.get_legal_actions(game.get_current_player_hand())))
 
         for i in range(0, final_num_of_iterations):
             # Set current game

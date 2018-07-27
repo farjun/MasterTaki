@@ -3,6 +3,7 @@ import copy
 from Agents.TreeBasedAgents.TreeBasedAgent import TreeBasedAgent
 import sys
 
+
 class AlphaBetaPruningAgent(TreeBasedAgent):
 
     def __init__(self, game, evaluation_function, depth=2):

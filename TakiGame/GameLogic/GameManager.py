@@ -93,25 +93,40 @@ class GameManager:
         self.__deal_players()
         self.pile.extend(self.deck.deal())
         self.active_color = self.pile[-1].get_color()
+        self.players_states = {}
         self.number_of_cards_to_draw = 2 if self.pile[-1].is_plus_2() else 1  # start the game with plus 2
 
-    def run_single_turn(self, cur_action, simulate = False):
+    def save_current_state(self, cur_action):
+        self.players_states[self.cur_player_index] = (self.get_state(), cur_action)
+
+    def update_agent(self):
+        if self.cur_player_index in self.players_states:
+            player_last_state, player_last_action = self.players_states[self.cur_player_index]
+        else:
+            # else this is his first turn, get None as action and current state as state
+            player_last_state = self.get_state()
+            player_last_action = None
+        self.get_current_player().update(player_last_state, player_last_action, self.get_state())
+
+    def run_single_turn(self, cur_action, simulate=False):
+        self.save_current_state(cur_action)
         self.logic.run_single_turn(cur_action, simulate)
+        self.update_agent()
 
     def is_end_game(self):
         return self.end_game
 
-    def __run_single_game(self):
+    def __run_single_game(self, simulate=False):
         """
         Runs single taki game and update scoring table according to game's result.
         """
         self.__init_new_game()
         while True:
-            if self.print_mode:
+            if self.print_mode and not simulate:
                 print("Player %d turn:" % (self.cur_player_index+1))
                 print("******\nLeading Card: %s\nLeading Color: %s\n******" % (self._top_card().get_value(), self.active_color))
             cur_action = self.get_current_player().choose_action()
-            self.run_single_turn(cur_action)
+            self.run_single_turn(cur_action, simulate)
             if self.end_game:
                 return
 
@@ -124,6 +139,7 @@ class GameManager:
             print("Player Name: %s\nPlayer Type: %s\nPlayer Score: %s" % (player[PLAYER].get_name(),
                                                                           player[PLAYER_TYPE],
                                                                            player[PLAYER_SCORE]))
+
     def _top_card(self):
         return self.pile[-1]
 
@@ -162,7 +178,7 @@ class GameManager:
 
 if __name__ == '__main__':
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
-    players = [["Ido", "H"], ["Shachar", "H"]]
+    players = [["Ido", "H"], ["Shachar", "A"]]
     number_of_games = 150
     game = GameManager(players, number_of_games, print_mode=True)
     game.run_game()
