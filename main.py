@@ -1,5 +1,5 @@
 # here we will define all main functions we want to run
-from Agents.MDPAgent.MDPAgent import MDPAgent
+from Agents.MarkovAgents.MdpAgent import MDPAgent
 from TakiGame.GameLogic.GameManager import GameManager
 def run_MDP_agent(game):
     """

@@ -1,19 +1,13 @@
-from itertools import permutations
-
-import sys
-
-from TakiGame.DeckStuff.Card import Color
-from TakiGame.DeckStuff.TakiDeck import Deck
-from TakiGame.GameLogic.Action import Action
-
-from TakiGame.Players.ManualAgent import ManualAgent
+from Agents import Heuristics
+from Agents.DeterministicAgents import StateHeuristics
 from Agents.DeterministicAgents.ReflexAgentInterface import HeuristicReflexAgent
-
-from Agents.DeterministicAgents import Heuristics, StateHeuristics
-from TakiGame.GameLogic.State import PartialStateTwoPlayer, FullStateTwoPlayer
-from TakiGame.GameLogic.LogicExecutor import LogicExecutor
+from Agents.MarkovAgents.MdpAgent import MDPAgent
 from Agents.TreeBasedAgents.AlphaBetaPruningAgent import AlphaBetaPruningAgent
 from Agents.TreeBasedAgents.ExpectimaxAgent import ExpectimaxAgent
+from TakiGame.DeckStuff.TakiDeck import Deck
+from TakiGame.GameLogic.LogicExecutor import LogicExecutor
+from TakiGame.GameLogic.State import PartialStateTwoPlayer, FullStateTwoPlayer
+from TakiGame.Players.ManualAgent import ManualAgent
 
 
 class NotEnoughPlayersException(Exception):
@@ -49,7 +43,7 @@ class GameManager:
             if player_details[1] == "E":
                 players[id] = [ExpectimaxAgent(self, [StateHeuristics.weight_heuristic], 2), "Expectimax", 0]
             if player_details[1] == 'MDP':
-                players[id] = []
+                players[id] = [MDPAgent(self),"MDPAgent",0]
         return players
 
     def __deal_players(self):
@@ -116,7 +110,7 @@ class GameManager:
     def is_end_game(self):
         return self.end_game
 
-    def __run_single_game(self, simulate=False):
+    def run_single_game(self, simulate=False):
         """
         Runs single taki game and update scoring table according to game's result.
         """
@@ -132,7 +126,7 @@ class GameManager:
 
     def run_game(self):
         for i in range(self.number_of_games):
-            self.__run_single_game()
+            self.run_single_game()
 
     def print_scoring_table(self):
         for player in self.players.values():
@@ -168,8 +162,8 @@ class GameManager:
         return self.pile[-1]
 
     def get_state(self):
-        current_player_hand = self.get_current_player_hand()
-        opp_player_hand = self.players[(self.cur_player_index + 1 * self.progress_direction) % len(self.players)][PLAYER].get_cards()
+        current_player_hand = self.get_current_player_hand().copy()
+        opp_player_hand = self.players[(self.cur_player_index + 1 * self.progress_direction) % len(self.players)][PLAYER].get_cards().copy()
         if self.players[self.cur_player_index][PLAYER_TYPE] != "MDP":
             return PartialStateTwoPlayer(current_player_hand, self.get_top_card(), opp_player_hand)
         else:
@@ -178,8 +172,15 @@ class GameManager:
 
 if __name__ == '__main__':
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
-    players = [["Ido", "H"], ["Shachar", "A"]]
+    players = [["Ido", "H"], ["Shachar", "MDP"]]
     number_of_games = 150
+    number_of_training = 1000
     game = GameManager(players, number_of_games, print_mode=True)
+    for i in range(number_of_games):
+        game.run_single_game(True)
+
     game.run_game()
     game.print_scoring_table()
+
+    print(game.players[1][PLAYER].Q_values)
+

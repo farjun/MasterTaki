@@ -14,6 +14,9 @@ class TwoPlayerState(object):
     def get_other_player_info(self):
         return None
 
+    def __hash__(self):
+        return hash((tuple(self.cur_players_cards),self.top_card,tuple(self.other_player_cards)))
+
 
 class FullStateTwoPlayer(TwoPlayerState):
     def __init__(self, cur_players_cards, top_card, other_player_cards):
@@ -39,3 +42,6 @@ class PartialStateTwoPlayer(TwoPlayerState):
         return other.cur_players_cards == self.cur_players_cards and \
                other.top_card == self.top_card and \
                len(other.other_player_cards) == len(self.other_player_cards)
+
+    def __hash__(self):
+        return hash((tuple(self.cur_players_cards),self.top_card,tuple(self.other_player_cards)))

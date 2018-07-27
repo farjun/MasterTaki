@@ -1,23 +1,20 @@
 import random
 
+from Agents.Rewards import total_cards_dropped_reward
 from TakiGame.Players.PlayerInterface import PlayerInterface
 from AIex4Files.util import Counter,flipCoin
-from TakiGame.GameLogic.GameManager import GameManager
-
-import Agents.MDPAgent.QlearningAlgorithem as QlearningAlgorithem
-from TakiGame.DeckStuff.Card import Color
 import numpy as np
-
+REWARD_FUNCTION = total_cards_dropped_reward
 
 class MDPAgent(PlayerInterface):
-    def __init__(self, game : GameManager):
+    def __init__(self, game ):
         super().__init__("MDP", game)
 
         self.is_fully_observable = True
         self.Q_values = Counter()
 
         # constants
-        self.alpha = float(1.0)
+        self.alpha = float(0.9)
         self.epsilon = float(0.05)
         self.gamma = float(0.8)
         self.discount = float(0.5)
@@ -27,7 +24,7 @@ class MDPAgent(PlayerInterface):
         :return: best action we can do
         """
         cur_state = self.game.get_state()
-        all_leagal_actions = self.game.logic.get_legal_actions_from_state(cur_state)
+        all_leagal_actions = self.game.logic.get_leagal_actions_from_state(cur_state)
         if flipCoin(self.epsilon):
             return random.choice(all_leagal_actions)
         else:
@@ -82,8 +79,10 @@ class MDPAgent(PlayerInterface):
         "*** YOUR CODE HERE ***"
         if (state, action) not in self.Q_values.keys():
             self.Q_values[(state, action)] = 0
-        next_action= self.getPolicy(nextState)
-        self.Q_values[(state, action)] += self.alpha*(reward+self.discount*self.getQValue(nextState,next_action)- self.getQValue(state, action))
+
+        reward = REWARD_FUNCTION(state,action,nextState)
+        next_action = self.getPolicy(nextState)
+        self.Q_values[(state, action)] += self.alpha*(reward+self.discount*self.getQValue(nextState,next_action) - self.getQValue(state, action))
 
 
     def getLegalActions(self, state):
