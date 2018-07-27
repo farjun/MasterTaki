@@ -58,7 +58,7 @@ class GameManager:
         :return:
         """
         for player in self.players.values():
-            player[PLAYER].set_cards([])
+            player[PLAYER].set_cards(list())
             hand = self.deck.deal(NUM_OF_CARDS_TO_DEAL)
             player[PLAYER].take_cards(hand)
 
@@ -79,7 +79,7 @@ class GameManager:
                            for i in range(1, len(self.players))]
         return number_of_cards
 
-    def __init_state(self):
+    def __init_new_game(self):
         """
         Inits all relevant parameters for new taki game.
         """
@@ -105,7 +105,7 @@ class GameManager:
         """
         Runs single taki game and update scoring table according to game's result.
         """
-        self.__init_state()
+        self.__init_new_game()
         while True:
             if self.print_mode:
                 print("Player %d turn:" % (self.cur_player_index+1))
