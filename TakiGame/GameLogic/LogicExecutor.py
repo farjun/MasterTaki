@@ -88,7 +88,7 @@ class LogicExecutor:
             yield from combinations(same_color_cards, cardinality)
 
 
-    def __end_taki_with_no_color_actions(self, current_subset, no_color_cards):
+    def __end_taki_with_no_color_actions(self, taki_card, taki_combinations, no_color_cards):
         """
         Add no color cards to the end of every possible open taki move.
         :param current_subset: list of every possible open taki move
@@ -99,14 +99,14 @@ class LogicExecutor:
         change_color_indices = [i for i in range(len(no_color_cards)) if no_color_cards[i].is_change_color()]
         for index in change_color_indices:
             # add every possible color for change color action
-            actions.extend([Action(s.get_cards() + [no_color_cards[index]], no_op=False, change_color=color)
+            actions.extend([Action([taki_card] + s + [no_color_cards[index]], no_op=False, change_color=color)
                         for color in Color if color is not Color.NO_COLOR
-                        for s in current_subset])
+                        for s in taki_combinations])
         if len(change_color_indices) < len(no_color_cards):
             # add other no color cards
-            actions.extend([Action(s.get_cards() + [special_card])
+            actions.extend([Action([taki_card] + s + [special_card])
                         for special_card in no_color_cards if not special_card.is_change_color()
-                        for s in current_subset])
+                        for s in taki_combinations])
         return actions
 
     def __generate_taki_card_moves(self, player_cards, color):
@@ -125,13 +125,13 @@ class LogicExecutor:
                           card.get_color() is Color.NO_COLOR and not card.is_taki_card(Color.NO_COLOR)]
         subsets = []
         for i in range(len(taki_cards)):
-            relevent_taki_sets = [list(s) for s in self.__subsets_comb(current_color_cards)]  # get all sets
+            relevent_taki_sets = [sorted(list(s)) for s in self.__subsets_comb(current_color_cards)]  # get all sets
             # change only the last card in each taki set and sort the rest to avoid redundancy
-            taki_combinations = [sorted(s[:i] + s[i+1:]) + [s[i]] for s in relevent_taki_sets for i in range(len(s))]
+            taki_combinations = [s[:i] + s[i+1:] + [s[i]] for s in relevent_taki_sets for i in range(len(s))]
             current_subset = [Action([taki_cards[i]] + s) for s in taki_combinations]  # add the taki card
             subsets.extend(current_subset)
             # open taki in any color can end with no color card, add those options to every existing option
-            subsets.extend(self.__end_taki_with_no_color_actions(current_subset, no_color_cards))
+            subsets.extend(self.__end_taki_with_no_color_actions(taki_cards[i], relevent_taki_sets, no_color_cards))
         return subsets
 
     def __search_color_cards(self, player_cards, color):
