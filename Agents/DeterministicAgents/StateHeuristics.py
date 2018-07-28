@@ -33,12 +33,12 @@ def init_card_weights():
             weights[card] = np.power(2, 2)
         elif card.number_or_special in SpecialWithColor:
             if card.number_or_special == SpecialWithColor.TAKI:
-                weights[card] = np.power(2, 10)
+                weights[card] = np.power(2, 13)
             else:
                 weights[card] = np.power(2, 8)
         else:
             if card.number_or_special == SpecialNoColor.SUPER_TAKI:
-                weights[card] = np.power(2, 8)
+                weights[card] = np.power(2, 13)
             else:
                 weights[card] = np.power(2, 9)
 
@@ -65,12 +65,12 @@ def weight_heuristic(state):
 
     if state.get_other_player_info() < 3:
         if plus2_exists:
-            return np.power(2, 10)
+            return hand_weight + np.power(2, 10)
         else:
             return 0
     if state.get_other_player_info() < len(hand):
         if not taki_exists:
-            hand_weight /= 2
+            hand_weight /=2
 
     if len(hand) == 1:
         card = hand[0].number_or_special
