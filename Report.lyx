@@ -110,6 +110,49 @@ c) The player can remove a card from his hand of the same value(?) as the
 
 \begin_layout Standard
 d) The player can remove a card from his hand if it that card has no color.
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Our goal was to make an agent that could learn to play taki smartly despite
+ the
+\end_layout
+
+\begin_layout Standard
+known computational complexity which was introduced by the game - by the
+ number of cards and the sheer amount of actions and states.
+ 
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Approach and Method
+\end_layout
+
+\begin_layout Standard
+We have tried to achieve our goal via a heuristic agent, a exceptimax agent
+ and through reinforcement learning.
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The exceptimax agent occasionally didn't manage to finish a game in time
+ due to the number of actions he possesses and the number of his opponent.
+\end_layout
+
+\begin_layout Standard
+meaning that with a large branching factor the game was stuck.
+ Therefore we have made a turn for alphabeta pruning agent in hope that
+ it would ease the complexity
 \end_layout
 
 \end_body
