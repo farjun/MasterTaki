@@ -4,11 +4,14 @@ from TakiGame.GameLogic.GameManager import GameManager, PLAYER, PLAYER_TYPE
 import pickle
 from collections import Counter
 
+mdp_weights_path = './weights/MDP_weights.pickle'
+pomdp_weights_path = './weights/POMDP_weights.pickle'
 
 def check_pickle_file_path(path):
     c = Counter()
     with open(path, 'wb') as outputfile:
         pickle.dump(c, outputfile)
+    return c
 
 
 def train_MDP_agent(game, number_of_traning_for_session=1000):
@@ -30,27 +33,33 @@ def train_MDP_agent(game, number_of_traning_for_session=1000):
     return post_session_number_of_state_action_combinations_observed - pre_session_number_of_state_action_combinations_observed
 
 
-def save_weights_to_pickle_file(game,path):
+def save_weights_to_pickle_file(game):
     for player in game.players.values():
         if player[PLAYER_TYPE] == "POMDPAgent":
             counter_to_save = player[PLAYER].Q_values
-            with open(path, 'wb') as outputfile:
+            with open(mdp_weights_path, 'wb') as outputfile:
+                pickle.dump(counter_to_save, outputfile)
+
+        if player[PLAYER_TYPE] == "MDPAgent":
+            counter_to_save = player[PLAYER].Q_values
+            with open(pomdp_weights_path, 'wb') as outputfile:
                 pickle.dump(counter_to_save, outputfile)
 
 
 if __name__ == '__main__':
-    weights_path = './weights/MDP_weights.pickle'
-    check_pickle_file_path(weights_path)
+    counter_weights = []
+    counter_weights.append(check_pickle_file_path(mdp_weights_path))
+    counter_weights.append(check_pickle_file_path(pomdp_weights_path))
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
     players = [["Ido", "H"], ["Shachar", "POMDP"]]
     number_of_games = 150
     number_of_training = 1000
-    game = GameManager(players, number_of_games, print_mode=True)
+    game = GameManager(players, number_of_games, print_mode=True, counter_weights_list=counter_weights)
 
     new_states_observed = 100
     while new_states_observed >= 100:
         new_states_observed = train_MDP_agent(game)
-        save_weights_to_pickle_file(game, weights_path)
+        save_weights_to_pickle_file(game)
 
     game.run_game() # run the test
     game.print_scoring_table()

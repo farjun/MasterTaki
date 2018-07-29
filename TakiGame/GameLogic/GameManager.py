@@ -9,7 +9,7 @@ from TakiGame.DeckStuff.TakiDeck import Deck
 from TakiGame.GameLogic.LogicExecutor import LogicExecutor
 from TakiGame.GameLogic.State import PartialStateTwoPlayer, FullStateTwoPlayer
 from TakiGame.Players.ManualAgent import ManualAgent
-
+from util import Counter
 
 class NotEnoughPlayersException(Exception):
     pass
@@ -23,16 +23,16 @@ PLAYER_NAME = 0
 
 
 class GameManager:
-    def __init__(self, playersTypes, games, print_mode=False):
+    def __init__(self, playersTypes, games, print_mode=False, counter_weights_list=[Counter(), Counter()]):
         if len(playersTypes) < 2:
             raise NotEnoughPlayersException
-        self.players = self.__init_players(playersTypes)
+        self.players = self.__init_players(playersTypes, counter_weights_list)
         self.number_of_games = games
         self.print_mode = print_mode
         self.deck = None
         self.logic = LogicExecutor(self)
 
-    def __init_players(self, playersTypes):
+    def __init_players(self, playersTypes, counter_weights_list):
         players = {}
         for id, player_details in enumerate(playersTypes):
             if player_details[1] == "M":
@@ -44,9 +44,9 @@ class GameManager:
             if player_details[1] == "E":
                 players[id] = [ExpectimaxAgent(self, [StateHeuristics.weight_heuristic], 2), "Expectimax", 0]
             if player_details[1] == 'MDP':
-                players[id] = [MDPAgent(self),"MDPAgent",0]
+                players[id] = [MDPAgent(self, counter_weights_list[0]),"MDPAgent",0]
             if player_details[1] == 'POMDP':
-                players[id] = [POMDPAgent(self),"POMDPAgent",0]
+                players[id] = [POMDPAgent(self, counter_weights_list[1]),"POMDPAgent",0]
         return players
 
     def __deal_players(self):

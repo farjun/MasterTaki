@@ -8,11 +8,11 @@ REWARD_FUNCTION = total_cards_dropped_reward
 
 class POMDPAgent(PlayerInterface):
 
-    def __init__(self, game):
+    def __init__(self, game, counter_weights):
         super().__init__("POMDPAgent", game)
 
         self.is_fully_observable = False
-        self.Q_values = Counter()
+        self.Q_values = counter_weights
 
         # constants
         self.alpha = float(0.9)

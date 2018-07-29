@@ -7,11 +7,11 @@ import numpy as np
 REWARD_FUNCTION = total_cards_dropped_reward
 
 class MDPAgent(PlayerInterface):
-    def __init__(self, game ):
+    def __init__(self, game, counter_weights):
         super().__init__("MDP", game)
 
         self.is_fully_observable = True
-        self.Q_values = Counter()
+        self.Q_values = counter_weights
 
         # constants
         self.alpha = float(0.9)
