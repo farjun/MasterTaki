@@ -50,7 +50,7 @@ class SpecialNoColor(Enum):
 # SPECIAL_CARDS_WHICH_HAVE_NO_MORE_CARDS_TO_PUT_ON = {SpecialNoColor.CHANGE_COLOR, SpecialWithColor.CRAZY_CARD,
 #                                                     SpecialNoColor.KING}  # not true for game with more than 2 players
 
-SPECIAL_CARDS_WHICH_HAVE_MORE_CARDS_TO_PUT_ON = {SpecialNoColor.SUPER_TAKI, SpecialWithColor.TAKI, SpecialWithColor.PLUS}
+# SPECIAL_CARDS_WHICH_HAVE_MORE_CARDS_TO_PUT_ON = {SpecialNoColor.SUPER_TAKI, SpecialWithColor.TAKI, SpecialWithColor.PLUS}
 
 
 class Card:

@@ -1,8 +1,7 @@
 import numpy as np
 import copy
 import scipy.special as scipy
-import Probabilities.Probabilities as pr
-from util import Counter
+from util import Counter, random_hand
 from TakiGame.Players.PlayerInterface import PlayerInterface
 import sys
 
@@ -13,7 +12,7 @@ MIN_SCORE = 0
 
 class TreeBasedAgent(PlayerInterface):
 
-    def __init__(self,game, evaluation_function, depth=2, agent_type="TreeBasedAgent", recursive_function=None):
+    def __init__(self, game, evaluation_function, depth=2, agent_type="TreeBasedAgent", recursive_function=None):
         super().__init__(agent_type, game)
         self.evaluation_function = evaluation_function
         self.depth = depth
@@ -31,7 +30,7 @@ class TreeBasedAgent(PlayerInterface):
         opponent_num_of_cards = game.get_other_players_number_of_cards()[0]
 
         # Get the opponent hand
-        hand, deck = pr.random_hand(opponent_num_of_cards, game)
+        hand, deck = random_hand(opponent_num_of_cards, game)
         set_of_hands.add(tuple(hand))
         deck_size = len(deck)
 
@@ -48,9 +47,9 @@ class TreeBasedAgent(PlayerInterface):
 
             actions[self.recursive_function(current_game, self.depth, 0)[1]] += 1
             # Get the next hand
-            hand, deck = pr.random_hand(opponent_num_of_cards, game)
-            while(tuple(hand) in set_of_hands):
-                hand, deck = pr.random_hand(opponent_num_of_cards, game)
+            hand, deck = random_hand(opponent_num_of_cards, game)
+            while tuple(hand) in set_of_hands:
+                hand, deck = random_hand(opponent_num_of_cards, game)
 
             set_of_hands.add(tuple(hand))
 

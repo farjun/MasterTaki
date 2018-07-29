@@ -23,12 +23,14 @@ class Deck:
                         self.cards_deck.append(Card(number, color))
 
                     for special_with_color_card in SpecialWithColor:
+                        if special_with_color_card == SpecialWithColor.TAKI:
+                            continue
                         self.cards_deck.append(Card(special_with_color_card, color))
 
         for i in range(NUMBER_OF_COPIES_FOR_KING):
             self.cards_deck.append(Card(SpecialNoColor.KING, Color.NO_COLOR))
-        for i in range(NUMBER_OF_COPIES_FOR_SUPER_TAKI):
-            self.cards_deck.append(Card(SpecialNoColor.SUPER_TAKI, Color.NO_COLOR))
+        # for i in range(NUMBER_OF_COPIES_FOR_SUPER_TAKI):
+        #     self.cards_deck.append(Card(SpecialNoColor.SUPER_TAKI, Color.NO_COLOR))
         for i in range(NUMBER_OF_COPIES_FOR_CHANGE_COLOR):
             self.cards_deck.append(Card(SpecialNoColor.CHANGE_COLOR, Color.NO_COLOR))
 

@@ -1,8 +1,7 @@
 from Agents import Heuristics
 from Agents.DeterministicAgents import StateHeuristics
 from Agents.DeterministicAgents.ReflexAgentInterface import HeuristicReflexAgent
-from Agents.MarkovAgents.MdpAgent import MDPAgent
-from Agents.MarkovAgents.PomdpAgent import POMDPAgent
+from Agents.MarkovAgents.ReinforcementAgent import ReinforcementAgent
 from Agents.TreeBasedAgents.AlphaBetaPruningAgent import AlphaBetaPruningAgent
 from Agents.TreeBasedAgents.ExpectimaxAgent import ExpectimaxAgent
 from TakiGame.DeckStuff.TakiDeck import Deck
@@ -10,6 +9,7 @@ from TakiGame.GameLogic.LogicExecutor import LogicExecutor
 from TakiGame.GameLogic.State import PartialStateTwoPlayer, FullStateTwoPlayer
 from TakiGame.Players.ManualAgent import ManualAgent
 from util import Counter
+
 
 class NotEnoughPlayersException(Exception):
     pass
@@ -44,9 +44,9 @@ class GameManager:
             if player_details[1] == "E":
                 players[id] = [ExpectimaxAgent(self, [StateHeuristics.weight_heuristic], 2), "Expectimax", 0]
             if player_details[1] == 'MDP':
-                players[id] = [MDPAgent(self, counter_weights_list[0]),"MDPAgent",0]
+                players[id] = [ReinforcementAgent(self, POMDP_flag=False, counter_weights=counter_weights_list[0]), "MDPAgent", 0]
             if player_details[1] == 'POMDP':
-                players[id] = [POMDPAgent(self, counter_weights_list[1]),"POMDPAgent",0]
+                players[id] = [ReinforcementAgent(self, POMDP_flag=True, counter_weights=counter_weights_list[1]), "POMDPAgent", 0]
         return players
 
     def __deal_players(self):

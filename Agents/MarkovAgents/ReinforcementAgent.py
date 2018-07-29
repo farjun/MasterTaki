@@ -1,35 +1,38 @@
 import random
-
 from Agents.Rewards import total_cards_dropped_reward
 from TakiGame.Players.PlayerInterface import PlayerInterface
-from util import Counter, flipCoin
+from util import flipCoin
 import numpy as np
+
 REWARD_FUNCTION = total_cards_dropped_reward
 
-class MDPAgent(PlayerInterface):
-    def __init__(self, game, counter_weights):
-        super().__init__("MDP", game)
 
-        self.is_fully_observable = True
+class ReinforcementAgent(PlayerInterface):
+
+    def __init__(self, game, POMDP_flag, counter_weights):
+        if POMDP_flag:
+            super().__init__("POMDPAgent", game)
+        else:
+            super().__init__("MDPAgent", game)
+
+        self.is_fully_observable = POMDP_flag
         self.Q_values = counter_weights
 
         # constants
         self.alpha = float(0.9)
         self.epsilon = float(0.05)
-        self.gamma = float(0.8)
-        self.discount = float(0.5)
+        self.discount = float(0.1)
 
     def choose_action(self):
         """
         :return: best action we can do
         """
         cur_state = self.game.get_state()
-        all_leagal_actions = self.game.logic.get_leagal_actions_from_state(cur_state)
+        all_legal_actions = self.game.logic.get_leagal_actions_from_state(cur_state)
         if flipCoin(self.epsilon):
-            return random.choice(all_leagal_actions)
+            return random.choice(all_legal_actions)
         else:
             return self.getPolicy(cur_state)
-
 
     def getQValue(self, state, action):
         """
@@ -37,10 +40,9 @@ class MDPAgent(PlayerInterface):
           Should return 0.0 if we never seen
           a state or (state,action) tuple
         """
-        "*** YOUR CODE HERE ***"
-        if (state,action) not in self.Q_values.keys():
+        if (state, action) not in self.Q_values.keys():
             return 0
-        return self.Q_values[(state,action)]
+        return self.Q_values[(state, action)]
 
     def getValue(self, state):
         """
@@ -49,9 +51,8 @@ class MDPAgent(PlayerInterface):
           there are no legal actions, which is the case at the
           terminal state, you should return a value of 0.0.
         """
-        "*** YOUR CODE HERE ***"
         legal_actions = self.getLegalActions(state)
-        return max([self.getQValue(state, action) for action in legal_actions],default=0)
+        return max([self.getQValue(state, action) for action in legal_actions], default=0)
 
     def getPolicy(self, state):
         """
@@ -76,13 +77,13 @@ class MDPAgent(PlayerInterface):
           NOTE: You should never call this function,
           it will be called on your behalf
         """
-        "*** YOUR CODE HERE ***"
         if (state, action) not in self.Q_values.keys():
             self.Q_values[(state, action)] = 0
 
         reward = REWARD_FUNCTION(state, action, nextState)
         next_action = self.getPolicy(nextState)
-        self.Q_values[(state, action)] += self.alpha*(reward+self.discount*self.getQValue(nextState,next_action) - self.getQValue(state, action))
+        self.Q_values[(state, action)] += self.alpha * (
+        reward + self.discount * self.getQValue(nextState, next_action) - self.getQValue(state, action))
 
     def getLegalActions(self, state):
         cur_cards = state.get_cur_player_cards()
