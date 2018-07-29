@@ -1,7 +1,7 @@
 import random
 from Agents.Rewards import total_cards_dropped_reward
 from TakiGame.Players.PlayerInterface import PlayerInterface
-from util import Counter, flipCoin
+from util import flipCoin
 import numpy as np
 
 REWARD_FUNCTION = total_cards_dropped_reward
@@ -19,8 +19,6 @@ class POMDPAgent(PlayerInterface):
         self.epsilon = float(0.05)
         self.gamma = float(0.8)
         self.discount = float(0.5)
-
-
 
     def choose_action(self):
         """

@@ -1,7 +1,7 @@
 # here we will define all main functions we want to run
 from Agents.MarkovAgents.MdpAgent import MDPAgent
 from TakiGame.GameLogic.GameManager import GameManager, PLAYER, PLAYER_TYPE
-import pickle
+import pickle, os
 from collections import Counter
 
 mdp_weights_path = './weights/MDP_weights.pickle'
@@ -9,8 +9,10 @@ pomdp_weights_path = './weights/POMDP_weights.pickle'
 
 
 def check_pickle_file_path(path):
-    with open(path, 'wb') as outputfile:
-        c = pickle.load(outputfile)
+    c = Counter()
+    if os.path.getsize(path) > 0:
+        with open(path, 'rb') as outputfile:
+            c = pickle.load(outputfile)
     return c
 
 
@@ -37,17 +39,17 @@ def save_weights_to_pickle_file(game):
     for player in game.players.values():
         if player[PLAYER_TYPE] == "POMDPAgent":
             counter_to_save = player[PLAYER].Q_values
-            with open(mdp_weights_path, 'wb') as outputfile:
+            with open(pomdp_weights_path, 'wb') as outputfile:
                 pickle.dump(counter_to_save, outputfile)
 
         if player[PLAYER_TYPE] == "MDPAgent":
             counter_to_save = player[PLAYER].Q_values
-            with open(pomdp_weights_path, 'wb') as outputfile:
+            with open(mdp_weights_path, 'wb') as outputfile:
                 pickle.dump(counter_to_save, outputfile)
 
 
 if __name__ == '__main__':
-    counter_weights = []
+    counter_weights = list()
     counter_weights.append(check_pickle_file_path(mdp_weights_path))
     counter_weights.append(check_pickle_file_path(pomdp_weights_path))
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
@@ -57,10 +59,11 @@ if __name__ == '__main__':
     game = GameManager(players, number_of_games, print_mode=True, counter_weights_list=counter_weights)
 
     new_states_observed = 100
-    while new_states_observed >= 100:
+    #while new_states_observed >= 100:
+    for i in range(2):
         new_states_observed = train_MDP_agent(game)
         save_weights_to_pickle_file(game)
 
-    game.run_game() # run the test
+    game.run_game()  # run the test
     game.print_scoring_table()
-    print(len(game.players[1][PLAYER].Q_values)) # print the number of state_actions learned
+    print(len(game.players[1]))
