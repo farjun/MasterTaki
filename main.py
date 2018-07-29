@@ -32,7 +32,7 @@ def train_MDP_agent(game, number_of_traning_for_session=1000):
 
 def save_weights_to_pickle_file(game,path):
     for player in game.players.values():
-        if player[PLAYER_TYPE] == "MDPAgent":
+        if player[PLAYER_TYPE] == "POMDPAgent":
             counter_to_save = player[PLAYER].Q_values
             with open(path, 'wb') as outputfile:
                 pickle.dump(counter_to_save, outputfile)
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     weights_path = './weights/MDP_weights.pickle'
     check_pickle_file_path(weights_path)
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
-    players = [["Ido", "H"], ["Shachar", "MDP"]]
+    players = [["Ido", "H"], ["Shachar", "POMDP"]]
     number_of_games = 150
     number_of_training = 1000
     game = GameManager(players, number_of_games, print_mode=True)

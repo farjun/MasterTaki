@@ -2,6 +2,7 @@ from Agents import Heuristics
 from Agents.DeterministicAgents import StateHeuristics
 from Agents.DeterministicAgents.ReflexAgentInterface import HeuristicReflexAgent
 from Agents.MarkovAgents.MdpAgent import MDPAgent
+from Agents.MarkovAgents.PomdpAgent import POMDPAgent
 from Agents.TreeBasedAgents.AlphaBetaPruningAgent import AlphaBetaPruningAgent
 from Agents.TreeBasedAgents.ExpectimaxAgent import ExpectimaxAgent
 from TakiGame.DeckStuff.TakiDeck import Deck
@@ -44,6 +45,8 @@ class GameManager:
                 players[id] = [ExpectimaxAgent(self, [StateHeuristics.weight_heuristic], 2), "Expectimax", 0]
             if player_details[1] == 'MDP':
                 players[id] = [MDPAgent(self),"MDPAgent",0]
+            if player_details[1] == 'POMDP':
+                players[id] = [POMDPAgent(self),"POMDPAgent",0]
         return players
 
     def __deal_players(self):
