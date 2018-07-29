@@ -7,10 +7,10 @@ from collections import Counter
 mdp_weights_path = './weights/MDP_weights.pickle'
 pomdp_weights_path = './weights/POMDP_weights.pickle'
 
+
 def check_pickle_file_path(path):
-    c = Counter()
     with open(path, 'wb') as outputfile:
-        pickle.dump(c, outputfile)
+        c = pickle.load(outputfile)
     return c
 
 
