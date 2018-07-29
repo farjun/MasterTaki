@@ -53,7 +53,7 @@ if __name__ == '__main__':
     counter_weights = list()
     counter_weights.append(check_pickle_file_path(mdp_weights_path))
     counter_weights.append(check_pickle_file_path(pomdp_weights_path))
-    # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
+    # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based  on input
     players = [["Ido", "H"], ["Shachar", "POMDP"]]
     number_of_games = 150
     number_of_training = 1000
