@@ -26,9 +26,9 @@ class FullStateTwoPlayer(TwoPlayerState):
         return self.other_player_cards
 
     def __eq__(self, other):
-        return Counter(other.cur_players_cards) == Counter(self.cur_players_cards) and \
-               Counter(other.top_card) == Counter(self.top_card) and \
-               Counter(other.other_player_cards) == Counter(self.other_player_cards)
+        return other.cur_players_cards == self.cur_players_cards and \
+               other.top_card == self.top_card and \
+               other.other_player_cards == self.other_player_cards
 
 
 class PartialStateTwoPlayer(TwoPlayerState):
@@ -39,9 +39,9 @@ class PartialStateTwoPlayer(TwoPlayerState):
         return len(self.other_player_cards)
 
     def __eq__(self, other):
-        return Counter(other.cur_players_cards) == Counter(self.cur_players_cards) and \
-               Counter(other.top_card) == Counter(self.top_card) and \
+        return other.cur_players_cards == self.cur_players_cards and \
+               other.top_card == self.top_card and \
                len(other.other_player_cards) == len(self.other_player_cards)
 
     def __hash__(self):
-        return hash((tuple(self.cur_players_cards),self.top_card,tuple(self.other_player_cards)))
+        return hash((tuple(self.cur_players_cards), self.top_card, tuple(self.other_player_cards)))

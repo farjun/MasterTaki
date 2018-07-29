@@ -2,7 +2,7 @@ import random
 
 from Agents.Rewards import total_cards_dropped_reward
 from TakiGame.Players.PlayerInterface import PlayerInterface
-from AIex4Files.util import Counter,flipCoin
+from util import Counter, flipCoin
 import numpy as np
 REWARD_FUNCTION = total_cards_dropped_reward
 
@@ -61,11 +61,11 @@ class MDPAgent(PlayerInterface):
         """
         "*** YOUR CODE HERE ***"
         legal_actions = self.game.logic.get_leagal_actions_from_state(state)
-        if len(legal_actions)  ==0:
-            return None # change to take card
-        q_valuse = np.asarray([self.getQValue(state, action) for action in legal_actions])
-        max_index= np.where(q_valuse == np.max(q_valuse)) #find all indexes of max element
-        return legal_actions[random.choice(max_index[0])] #get random from max
+        if len(legal_actions) == 1:
+            return legal_actions[0]  # change to take card
+        q_values = np.asarray([self.getQValue(state, action) for action in legal_actions])
+        max_index = np.where(q_values == np.max(q_values))  # find all indexes of max element
+        return legal_actions[random.choice(max_index[0])]  # get random from max
 
     def update(self, state, action, nextState):
         """
@@ -80,10 +80,9 @@ class MDPAgent(PlayerInterface):
         if (state, action) not in self.Q_values.keys():
             self.Q_values[(state, action)] = 0
 
-        reward = REWARD_FUNCTION(state,action,nextState)
+        reward = REWARD_FUNCTION(state, action, nextState)
         next_action = self.getPolicy(nextState)
         self.Q_values[(state, action)] += self.alpha*(reward+self.discount*self.getQValue(nextState,next_action) - self.getQValue(state, action))
-
 
     def getLegalActions(self, state):
         cur_cards = state.get_cur_player_cards()

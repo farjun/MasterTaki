@@ -4,12 +4,14 @@ from TakiGame.GameLogic.GameManager import GameManager, PLAYER, PLAYER_TYPE
 import pickle
 from collections import Counter
 
+
 def check_pickle_file_path(path):
     c = Counter()
     with open(path, 'wb') as outputfile:
         pickle.dump(c, outputfile)
 
-def train_MDP_agent(game,number_of_traning_for_session=1000):
+
+def train_MDP_agent(game, number_of_traning_for_session=1000):
     """
     trains the mdp agent for one session of number_of_traning_for_session games
     :param game:
@@ -17,15 +19,16 @@ def train_MDP_agent(game,number_of_traning_for_session=1000):
     :return: the number of new state-action combination he saw during the session
     """
     pre_session_number_of_state_action_combinations_observed = len(game.players[1][PLAYER].Q_values)
-    print("starting new session with current learned states-actions : ",pre_session_number_of_state_action_combinations_observed)
+    print("starting new session with current learned states-actions : ", pre_session_number_of_state_action_combinations_observed)
 
     for i in range(number_of_traning_for_session):
         game.run_single_game(True)
 
     post_session_number_of_state_action_combinations_observed = len(game.players[1][PLAYER].Q_values)
-    print("ended new session with current learned states-actions : ",post_session_number_of_state_action_combinations_observed)
+    print("ended new session with current learned states-actions : ", post_session_number_of_state_action_combinations_observed)
 
     return post_session_number_of_state_action_combinations_observed - pre_session_number_of_state_action_combinations_observed
+
 
 def save_weights_to_pickle_file(game,path):
     for player in game.players.values():
@@ -47,7 +50,7 @@ if __name__ == '__main__':
     new_states_observed = 100
     while new_states_observed >= 100:
         new_states_observed = train_MDP_agent(game)
-        save_weights_to_pickle_file(game,weights_path)
+        save_weights_to_pickle_file(game, weights_path)
 
     game.run_game() # run the test
     game.print_scoring_table()

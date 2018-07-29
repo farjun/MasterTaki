@@ -28,11 +28,19 @@ def get_current_deck(game):
 
     deck = Deck().cards_deck
     # Remove cards that are in the pile
-    for card in game.pile:
-        deck.remove(card)
+    flag = True
+    for num, card in enumerate(game.pile):
+        if card not in deck and flag:
+            print("Card not in deck: %s\nCard index: %d\nDeck: %s\nPile: %s\n" % (card, num, deck, game.pile))
+            flag = False
+        else:
+            deck.remove(card)
 
     # Remove cards that are in the current player hand
     for card in game.get_current_player_hand():
-        deck.remove(card)
+        if card not in deck:
+            print("Card not in deck: %s\nDeck: %s\n" % (card, deck))
+        else:
+            deck.remove(card)
 
     return deck

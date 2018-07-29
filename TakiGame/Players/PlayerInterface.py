@@ -1,5 +1,4 @@
 from TakiGame.GameLogic.Action import Action
-from sortedcontainers import SortedList
 
 
 class PlayerInterface:
@@ -8,7 +7,7 @@ class PlayerInterface:
     """
     def __init__(self, name, game):
         self.name = name
-        self.cards = SortedList()
+        self.cards = list()
         self.game = game
 
     def get_name(self):
@@ -25,7 +24,8 @@ class PlayerInterface:
 
     def take_cards(self, cards_to_take):
         for card in cards_to_take:
-            self.cards.add(card)
+            self.cards.append(card)
+        self.cards = sorted(self.cards)
 
     def use_cards(self, cards_to_use):
         for card in cards_to_use:
@@ -35,10 +35,10 @@ class PlayerInterface:
         return len(self.cards)
 
     def get_cards(self):
-        return self.cards
+        return sorted(self.cards)
 
     def set_cards(self, cards):
-        self.cards = SortedList()
+        self.cards = list()
         self.take_cards(cards)
 
 

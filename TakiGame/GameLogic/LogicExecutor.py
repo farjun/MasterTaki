@@ -199,7 +199,10 @@ class LogicExecutor:
                     (action.action_is_stop() and self.game.get_number_of_players() == 2):
                 player_cards_left = player_cards.copy()
                 for card in action.get_cards():
-                    player_cards_left.remove(card)
+                    if card not in player_cards_left:
+                        print("Card not in player's hand: %s\nHand: %s\nOriginal hand: %s\n" % (card, player_cards_left, player_cards))
+                    else:
+                        player_cards_left.remove(card)
                 another_turn_actions.extend([action + another_action for another_action in
                                              self.get_legal_actions(player_cards_left, action.get_top_card(), action.get_active_color(), False)])
         return another_turn_actions
