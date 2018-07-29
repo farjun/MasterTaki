@@ -28,7 +28,7 @@ class ReinforcementAgent(PlayerInterface):
         :return: best action we can do
         """
         cur_state = self.game.get_state()
-        all_legal_actions = self.game.logic.get_leagal_actions_from_state(cur_state)
+        all_legal_actions = self.game.logic.get_legal_actions_from_state(cur_state)
         if flipCoin(self.epsilon):
             return random.choice(all_legal_actions)
         else:
@@ -61,7 +61,7 @@ class ReinforcementAgent(PlayerInterface):
           you should return None.
         """
         "*** YOUR CODE HERE ***"
-        legal_actions = self.game.logic.get_leagal_actions_from_state(state)
+        legal_actions = self.game.logic.get_legal_actions_from_state(state)
         if len(legal_actions) == 1:
             return legal_actions[0]  # change to take card
         q_values = np.asarray([self.getQValue(state, action) for action in legal_actions])

@@ -61,7 +61,7 @@ if __name__ == '__main__':
 
     new_states_observed = 100
     #while new_states_observed >= 100:
-    for i in range(5):
+    for i in range(1):
         new_states_observed = train_MDP_agent(game)
         save_weights_to_pickle_file(game)
 

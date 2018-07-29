@@ -103,6 +103,7 @@ class GameManager:
             # else this is his first turn, get None as action and current state as state
             player_last_state = self.get_state()
             player_last_action = None
+
         self.get_current_player().update(player_last_state, player_last_action, self.get_state())
 
     def run_single_turn(self, cur_action, simulate=False):

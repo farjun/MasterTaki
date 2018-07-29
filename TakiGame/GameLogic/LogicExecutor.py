@@ -207,8 +207,8 @@ class LogicExecutor:
                                              self.get_legal_actions(player_cards_left, action.get_top_card(), action.get_active_color(), False)])
         return another_turn_actions
 
-    def get_leagal_actions_from_state(self,state:FullStateTwoPlayer):
-        return self.get_legal_actions(state.cur_players_cards)
+    def get_legal_actions_from_state(self, state: FullStateTwoPlayer):
+        return self.get_legal_actions(state.cur_player_cards)
 
     def get_legal_actions(self, player_cards, card_on_top_of_pile = None, active_color = None, include_draw = True):
         """
