@@ -1,5 +1,5 @@
 import random
-from Agents.Rewards import total_cards_dropped_reward
+from Agents.Rewards import total_cards_dropped_reward, TERMINAL_STATE_SCORE
 from TakiGame.Players.PlayerInterface import PlayerInterface
 from util import flipCoin
 import numpy as np
@@ -40,8 +40,6 @@ class ReinforcementAgent(PlayerInterface):
           Should return 0.0 if we never seen
           a state or (state,action) tuple
         """
-        if (state, action) not in self.Q_values.keys():
-            return 0
         return self.Q_values[(state, action)]
 
     def getValue(self, state):
@@ -77,13 +75,15 @@ class ReinforcementAgent(PlayerInterface):
           NOTE: You should never call this function,
           it will be called on your behalf
         """
-        if (state, action) not in self.Q_values.keys():
-            self.Q_values[(state, action)] = 0
-
         reward = REWARD_FUNCTION(state, action, nextState)
-        next_action = self.getPolicy(nextState)
-        self.Q_values[(state, action)] += self.alpha * (
-        reward + self.discount * self.getQValue(nextState, next_action) - self.getQValue(state, action))
+        if abs(reward) == TERMINAL_STATE_SCORE:
+            # game is over, there is no meaning for next state so don't take it to account
+            self.Q_values[(state, action)] += self.alpha * reward
+        else:
+            next_action = self.getPolicy(nextState)
+            self.Q_values[(state, action)] += self.alpha * (reward + self.discount *
+                                                            self.getQValue(nextState, next_action) -
+                                                            self.getQValue(state, action))
 
     def getLegalActions(self, state):
         cur_cards = state.get_cur_player_cards()

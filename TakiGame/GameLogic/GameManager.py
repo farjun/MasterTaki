@@ -96,20 +96,26 @@ class GameManager:
     def save_current_state(self, cur_action):
         self.players_states[self.cur_player_index] = (self.get_state(), cur_action)
 
-    def update_agent(self):
-        if self.cur_player_index in self.players_states:
-            player_last_state, player_last_action = self.players_states[self.cur_player_index]
+    def update_agent(self, agent_index):
+        if agent_index in self.players_states:
+            player_last_state, player_last_action = self.players_states[agent_index]
         else:
             # else this is his first turn, get None as action and current state as state
             player_last_state = self.get_state()
             player_last_action = None
+        self.players[agent_index][PLAYER].update(player_last_state, player_last_action, self.get_state())
 
-        self.get_current_player().update(player_last_state, player_last_action, self.get_state())
+    def __end_game_update_agents(self):
+        for agent_index in range(len(self.players)):
+            self.update_agent(agent_index)
 
     def run_single_turn(self, cur_action, simulate=False):
         self.save_current_state(cur_action)
         self.logic.run_single_turn(cur_action, simulate)
-        self.update_agent()
+        if self.is_end_game():
+            self.__end_game_update_agents()
+        else:
+            self.update_agent(self.cur_player_index)
 
     def is_end_game(self):
         return self.end_game
@@ -169,22 +175,6 @@ class GameManager:
         current_player_hand = self.get_current_player_hand().copy()
         opp_player_hand = self.players[(self.cur_player_index + 1 * self.progress_direction) % len(self.players)][PLAYER].get_cards().copy()
         if self.players[self.cur_player_index][PLAYER_TYPE] != "MDP":
-            return PartialStateTwoPlayer(current_player_hand, self.get_top_card(), opp_player_hand)
+            return PartialStateTwoPlayer(current_player_hand, self.get_top_card(), opp_player_hand, self.cur_player_index)
         else:
-            return FullStateTwoPlayer(current_player_hand, self.get_top_card(), opp_player_hand)
-
-
-if __name__ == '__main__':
-    # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based on input
-    players = [["Ido", "H"], ["Shachar", "MDP"]]
-    number_of_games = 150
-    number_of_training = 1000
-    game = GameManager(players, number_of_games, print_mode=True)
-    for i in range(number_of_games):
-        game.run_single_game(True)
-
-    game.run_game()
-    game.print_scoring_table()
-
-    print(len(game.players[1][PLAYER].Q_values))
-
+            return FullStateTwoPlayer(current_player_hand, self.get_top_card(), opp_player_hand, self.cur_player_index)
