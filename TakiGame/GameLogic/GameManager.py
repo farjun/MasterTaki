@@ -43,9 +43,9 @@ class GameManager:
                 players[id] = [AlphaBetaPruningAgent(self, [StateHeuristics.weight_heuristic], 2), "AlphaBetaPruning", 0]
             if player_details[1] == "E":
                 players[id] = [ExpectimaxAgent(self, [StateHeuristics.weight_heuristic], 2), "Expectimax", 0]
-            if player_details[1] == 'MDP':
+            if player_details[1] == "MDP":
                 players[id] = [ReinforcementAgent(self, POMDP_flag=False, counter_weights=counter_weights_list[0]), "MDPAgent", 0]
-            if player_details[1] == 'POMDP':
+            if player_details[1] == "POMDP":
                 players[id] = [ReinforcementAgent(self, POMDP_flag=True, counter_weights=counter_weights_list[1]), "POMDPAgent", 0]
         return players
 

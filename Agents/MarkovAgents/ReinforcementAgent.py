@@ -17,6 +17,7 @@ class ReinforcementAgent(PlayerInterface):
 
         self.is_fully_observable = POMDP_flag
         self.Q_values = counter_weights
+        self.repeat_state_action_counter = 0
 
         # constants
         self.alpha = float(0.9)
@@ -76,6 +77,8 @@ class ReinforcementAgent(PlayerInterface):
           it will be called on your behalf
         """
         reward = REWARD_FUNCTION(state, action, nextState)
+        if self.Q_values[(state, action)] != 0:
+            self.repeat_state_action_counter += 1
         if abs(reward) == TERMINAL_STATE_SCORE:
             # game is over, there is no meaning for next state so don't take it to account
             self.Q_values[(state, action)] += self.alpha * reward
@@ -88,5 +91,11 @@ class ReinforcementAgent(PlayerInterface):
     def getLegalActions(self, state):
         cur_cards = state.get_cur_player_cards()
         return self.game.logic.get_legal_actions(cur_cards)
+
+    def init_repeat_counter(self):
+        self.repeat_state_action_counter = 0
+
+    def get_repeat_counter(self):
+        return self.repeat_state_action_counter
 
 

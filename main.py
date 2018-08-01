@@ -25,6 +25,7 @@ def train_MDP_agent(game, number_of_training_for_session=1000):
     """
     pre_session_number_of_state_observed = len(set([state for state, action in game.players[1][PLAYER].Q_values]))
     print("starting new session with current learned states : ", pre_session_number_of_state_observed)
+    game.players[1][PLAYER].init_repeat_counter()
 
     for i in range(number_of_training_for_session):
         game.run_single_game(True)
@@ -32,6 +33,7 @@ def train_MDP_agent(game, number_of_training_for_session=1000):
     post_session_number_of_state_observed = len(set([state for state, action in game.players[1][PLAYER].Q_values]))
     print("ended new session with current learned states : ", post_session_number_of_state_observed)
     print("Difference in this iteration: ", post_session_number_of_state_observed - pre_session_number_of_state_observed)
+    print("Number of repeated state-action updates: ", game.players[1][PLAYER].get_repeat_counter())
 
     return post_session_number_of_state_observed - pre_session_number_of_state_observed
 
@@ -51,19 +53,19 @@ def save_weights_to_pickle_file(game):
 
 if __name__ == '__main__':
     counter_weights = list()
-    # counter_weights.append(check_pickle_file_path(mdp_weights_path))
-    # counter_weights.append(check_pickle_file_path(pomdp_weights_path))
+    counter_weights.append(check_pickle_file_path(mdp_weights_path))
+    counter_weights.append(check_pickle_file_path(pomdp_weights_path))
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based  on input
-    players = [["Ido", "H"], ["Shachar", "A"]]
+    players = [["Ido", "H"], ["Shachar", "POMDP"]]
     number_of_games = 50
     number_of_training = 1000
     game = GameManager(players, number_of_games, print_mode=False, counter_weights_list=counter_weights)
 
     # new_states_observed = 100
     # #while new_states_observed >= 100:
-    # for i in range(5):
-    #     new_states_observed = train_MDP_agent(game)
-    #     save_weights_to_pickle_file(game)
+    for i in range(10):
+        train_MDP_agent(game)
+        save_weights_to_pickle_file(game)
 
     game.run_game()  # run the test
     game.print_scoring_table()
