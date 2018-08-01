@@ -62,4 +62,7 @@ class TreeBasedAgent(PlayerInterface):
         if len(legal_actions) == 1:
             # only possible action is draw card, so draw card
             return legal_actions[0]
+        elif len(legal_actions) > 100:
+            max_action = np.argmax([len(action.cards_to_put) for action in legal_actions])
+            return legal_actions[max_action]
         return self.tree_recursion_on_number_of_hands(current_game)

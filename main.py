@@ -51,20 +51,20 @@ def save_weights_to_pickle_file(game):
 
 if __name__ == '__main__':
     counter_weights = list()
-    counter_weights.append(check_pickle_file_path(mdp_weights_path))
-    counter_weights.append(check_pickle_file_path(pomdp_weights_path))
+    # counter_weights.append(check_pickle_file_path(mdp_weights_path))
+    # counter_weights.append(check_pickle_file_path(pomdp_weights_path))
     # players, number_of_games = readCommand( sys.argv[1:] ) # Get game components based  on input
-    players = [["Ido", "H"], ["Shachar", "POMDP"]]
-    number_of_games = 150
+    players = [["Ido", "H"], ["Shachar", "A"]]
+    number_of_games = 50
     number_of_training = 1000
-    game = GameManager(players, number_of_games, print_mode=True, counter_weights_list=counter_weights)
+    game = GameManager(players, number_of_games, print_mode=False, counter_weights_list=counter_weights)
 
-    new_states_observed = 100
-    #while new_states_observed >= 100:
-    for i in range(5):
-        new_states_observed = train_MDP_agent(game)
-        save_weights_to_pickle_file(game)
+    # new_states_observed = 100
+    # #while new_states_observed >= 100:
+    # for i in range(5):
+    #     new_states_observed = train_MDP_agent(game)
+    #     save_weights_to_pickle_file(game)
 
     game.run_game()  # run the test
     game.print_scoring_table()
-    print(len(game.players[1]))
+    # print(len(game.players[1]))

@@ -46,6 +46,7 @@ def init_card_weights():
 
 def weight_heuristic(state):
     hand = state.get_cur_player_cards()
+
     top_card = state.get_top_card()
     active_color = top_card.color
 
