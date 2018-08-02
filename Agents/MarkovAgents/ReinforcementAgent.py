@@ -9,7 +9,7 @@ REWARD_FUNCTION = total_cards_dropped_reward
 
 class ReinforcementAgent(PlayerInterface):
 
-    def __init__(self, game, POMDP_flag, counter_weights):
+    def __init__(self, game,discount, epsilon, POMDP_flag, counter_weights):
         if POMDP_flag:
             super().__init__("POMDPAgent", game)
         else:
@@ -21,8 +21,8 @@ class ReinforcementAgent(PlayerInterface):
 
         # constants
         self.alpha = float(0.9)
-        self.epsilon = float(0.05)
-        self.discount = float(0.1)
+        self.epsilon = epsilon
+        self.discount = discount
 
     def choose_action(self):
         """

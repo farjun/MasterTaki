@@ -23,16 +23,16 @@ PLAYER_NAME = 0
 
 
 class GameManager:
-    def __init__(self, playersTypes, games, print_mode=False, counter_weights_list=[Counter(), Counter()]):
+    def __init__(self, playersTypes, games, levels,discount, epsilon, print_mode=False, counter_weights_list=[Counter(), Counter()]):
         if len(playersTypes) < 2:
             raise NotEnoughPlayersException
-        self.players = self.__init_players(playersTypes, counter_weights_list)
+        self.players = self.__init_players(playersTypes, counter_weights_list, levels,discount, epsilon)
         self.number_of_games = games
         self.print_mode = print_mode
         self.deck = None
         self.logic = LogicExecutor(self)
 
-    def __init_players(self, playersTypes, counter_weights_list):
+    def __init_players(self, playersTypes, counter_weights_list, levels,discount, epsilon):
         players = {}
         for id, player_details in enumerate(playersTypes):
             if player_details[1] == "M":
@@ -40,13 +40,13 @@ class GameManager:
             if player_details[1] == "H":
                 players[id] = [HeuristicReflexAgent(self, [Heuristics.color_heuristic], False), "Heuristic", 0]
             if player_details[1] == "A":
-                players[id] = [AlphaBetaPruningAgent(self, [StateHeuristics.weight_heuristic], 2), "AlphaBetaPruning", 0]
+                players[id] = [AlphaBetaPruningAgent(self, [StateHeuristics.weight_heuristic], levels), "AlphaBetaPruning", 0]
             if player_details[1] == "E":
-                players[id] = [ExpectimaxAgent(self, [StateHeuristics.weight_heuristic], 2), "Expectimax", 0]
+                players[id] = [ExpectimaxAgent(self, [StateHeuristics.weight_heuristic], levels), "Expectimax", 0]
             if player_details[1] == "MDP":
-                players[id] = [ReinforcementAgent(self, POMDP_flag=False, counter_weights=counter_weights_list[0]), "MDPAgent", 0]
+                players[id] = [ReinforcementAgent(self,discount, epsilon ,POMDP_flag=False, counter_weights=counter_weights_list[0]), "MDPAgent", 0]
             if player_details[1] == "POMDP":
-                players[id] = [ReinforcementAgent(self, POMDP_flag=True, counter_weights=counter_weights_list[1]), "POMDPAgent", 0]
+                players[id] = [ReinforcementAgent(self,discount, epsilon ,POMDP_flag=True, counter_weights=counter_weights_list[1]), "POMDPAgent", 0]
         return players
 
     def __deal_players(self):
