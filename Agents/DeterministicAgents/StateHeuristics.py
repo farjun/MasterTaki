@@ -4,6 +4,8 @@ from TakiGame.DeckStuff.Card import Number, SpecialNoColor, SpecialWithColor, Co
 import numpy as np
 
 weights = {}
+
+
 def color_heuristic(state):
     """
     Derive the state score by looking at the percentage of the cards
@@ -23,8 +25,10 @@ def color_heuristic(state):
 def remove_cards_heuristic(state):
     return 1/len(state.get_cur_player_cards()) *100
 
+
 def color_and_remove_heuristic(state):
     return 0.8 * remove_cards_heuristic(state) + 0.2 * color_heuristic(state)
+
 
 def init_card_weights():
     deck = Deck().cards_deck
@@ -41,7 +45,6 @@ def init_card_weights():
                 weights[card] = np.power(2, 13)
             else:
                 weights[card] = np.power(2, 9)
-
 
 
 def weight_heuristic(state):
@@ -71,7 +74,7 @@ def weight_heuristic(state):
             return 0
     if state.get_other_player_info() < len(hand):
         if not taki_exists:
-            hand_weight /=2
+            hand_weight /= 2
 
     if len(hand) == 1:
         card = hand[0].number_or_special

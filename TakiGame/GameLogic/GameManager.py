@@ -144,6 +144,12 @@ class GameManager:
                                                                           player[PLAYER_TYPE],
                                                                            player[PLAYER_SCORE]))
 
+    def get_player_score(self, player_index):
+        return self.players[player_index][PLAYER_SCORE]
+
+    def get_player(self, player_index):
+        return self.players[player_index][PLAYER]
+
     def _top_card(self):
         return self.pile[-1]
 

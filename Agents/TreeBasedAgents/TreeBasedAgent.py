@@ -3,7 +3,25 @@ import copy
 import scipy.special as scipy
 from util import Counter, random_hand
 from TakiGame.Players.PlayerInterface import PlayerInterface
-import sys
+import signal
+import random
+from contextlib import contextmanager
+
+
+class TimeoutException(Exception): pass
+
+
+@contextmanager
+def time_limit(seconds):
+    def signal_handler(signum, frame):
+        raise TimeoutException("Timed out!")
+    signal.signal(signal.SIGALRM, signal_handler)
+    signal.alarm(seconds)
+    try:
+        yield
+    finally:
+        signal.alarm(0)
+
 
 NUM_OF_ITERATIONS = 10
 MAX_SCORE = 1000
@@ -17,6 +35,7 @@ class TreeBasedAgent(PlayerInterface):
         self.evaluation_function = evaluation_function
         self.depth = depth
         self.recursive_function = recursive_function
+        self.timed_out_counter = 0
 
     def tree_recursion_on_number_of_hands(self, game):
         """
@@ -62,7 +81,20 @@ class TreeBasedAgent(PlayerInterface):
         if len(legal_actions) == 1:
             # only possible action is draw card, so draw card
             return legal_actions[0]
-        elif len(legal_actions) > 100:
-            max_action = np.argmax([len(action.cards_to_put) for action in legal_actions])
+        # elif len(legal_actions) > 100:
+        #     max_action = np.argmax([len(action.cards_to_put) for action in legal_actions])
+        #     return legal_actions[max_action]
+        try:
+            with time_limit(60*2):  # limit choose action to 2 minutes each turn
+                return self.tree_recursion_on_number_of_hands(current_game)
+        except TimeoutException as e:
+            print("Timed out!")
+            self.timed_out_counter += 1
+            # pick random action with maximum length
+            action_lengths = [len(action.cards_to_put) for action in legal_actions]
+            max_action = random.choice(np.argwhere(action_lengths == np.amax(action_lengths)).flatten().tolist())
             return legal_actions[max_action]
-        return self.tree_recursion_on_number_of_hands(current_game)
+
+    def get_timed_out_counter(self):
+        return self.timed_out_counter
+
