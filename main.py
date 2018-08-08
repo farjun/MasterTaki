@@ -17,6 +17,7 @@ POMDP = "-pomdp"
 MANUAL = "-manual"
 DISCOUNT_INDEX = 10
 EPSILON_INDEX = 9
+LEVELS_INDEX = 8
 
 
 def check_pickle_file_path(path):
@@ -124,8 +125,8 @@ def parse_optional_agruments(arguments):
     """
     levels = discount = epsilon = None
     for param in arguments:
-        if param.isdigit():
-            levels = parse_levels_for_tree_agent(int(param))
+        if param.startswith("-levels="):
+            levels = parse_levels_for_tree_agent(int(param[LEVELS_INDEX:]))
         elif param.startswith("-discount="):
             discount = float(param[DISCOUNT_INDEX:])
         elif param.startswith("-epsilon="):
@@ -153,7 +154,7 @@ def parser():
         print("wrong usage of the script parameters")
     players = parse_agent(sys.argv[1:3])
     number_of_games = parse_num_of_games(sys.argv[3])
-    levels = discount = epsilon= None
+    levels = discount = epsilon = None
     if len(sys.argv) > 4:
         arguments = sys.argv[4:]
         levels, discount, epsilon = parse_optional_agruments(arguments)
@@ -167,7 +168,7 @@ def test_alphabeta_vs_reflex(num_of_iterations):
     timed_out_counter = 0
     for i in range(num_of_iterations):
         print("Start iteration number %d" % (i+1))
-        game = GameManager(players, number_of_games, levels, discount, epsilon, print_mode=True)
+        game = GameManager(players, number_of_games, levels, discount, epsilon, print_mode=False)
         game.run_game()  # run the test
         game.print_scoring_table()
         winning_percentages[i-1] = game.get_player_score(0)/number_of_games  # insert alphabeta agent index
@@ -205,9 +206,9 @@ def run_from_parser():
 
 
 if __name__ == '__main__':
-    load_and_train_MDP()
+    # load_and_train_MDP()
     # run_from_parser()
-    # test_alphabeta_vs_reflex(10)
+    test_alphabeta_vs_reflex(10)
 
 
 

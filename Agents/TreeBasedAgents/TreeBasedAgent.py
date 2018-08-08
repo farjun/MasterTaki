@@ -56,7 +56,8 @@ class TreeBasedAgent(PlayerInterface):
         # Achieve the number of iterations possible
         final_num_of_iterations = int(min(NUM_OF_ITERATIONS, scipy.binom(deck_size + opponent_num_of_cards,
                                                                      opponent_num_of_cards)))
-        print("number of actions: ", len(game.get_legal_actions(game.get_current_player_hand())))
+        if game.print_mode:
+            print("number of actions: ", len(game.get_legal_actions(game.get_current_player_hand())))
 
         for i in range(0, final_num_of_iterations):
             # Set current game
