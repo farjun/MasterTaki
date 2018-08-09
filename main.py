@@ -140,13 +140,6 @@ def parse_optional_arguments(arguments):
             epsilon = float(param[len(EPSILON):])
         elif param.startswith(PRINT_MODE):
             print_mode = param[len(PRINT_MODE):] == "True"
-    # give them the default value
-    if levels is None:
-        levels = 2
-    if discount is None:
-        discount = 0.1
-    if epsilon is None:
-        epsilon = 0.05
     return levels, discount, epsilon, print_mode
 
 
@@ -163,11 +156,16 @@ def parser():
         print("wrong usage of the script parameters")
     players = parse_agent(sys.argv[1:3])
     number_of_games = parse_num_of_games(sys.argv[3])
-    levels = discount = epsilon = None
     print_mode = False
+    levels = discount = epsilon = None
     if len(sys.argv) > 4:
         arguments = sys.argv[4:]
         levels, discount, epsilon, print_mode = parse_optional_arguments(arguments)
+    else:
+        # give them the default value
+        levels = 2
+        discount = 0.1
+        epsilon = 0.05
 
     return players, number_of_games, levels, discount, epsilon, print_mode
 
@@ -193,11 +191,16 @@ def test_alphabeta_vs_reflex(num_of_iterations):
     pyplot.show()
 
 
-def load_and_train_reinforcement(approximate=False):
+def load_counter_weights():
     counter_weights = list()
     counter_weights.append(check_pickle_file_path(mdp_weights_path))
     counter_weights.append(check_pickle_file_path(pomdp_weights_path))
     counter_weights.append(check_pickle_file_path(approximate_weights_path))
+    return counter_weights
+
+
+def load_and_train_reinforcement(approximate=False):
+    counter_weights = load_counter_weights()
     if approximate:
         players = [["Ido", "H"], ["Shachar", "APPROX"]]
     else:
@@ -210,13 +213,14 @@ def load_and_train_reinforcement(approximate=False):
         print("Start train session")
         train_MDP_agent(game, number_of_training)
         print("End train session")
-        if i % 30 == 0:
+        if i % 10 == 0:
             save_weights_to_pickle_file(game)
 
 
 def run_from_parser():
+    counter_weights = load_counter_weights()
     players, number_of_games, levels, discount, epsilon, print_mode = parser()
-    game = GameManager(players, number_of_games, levels, discount, epsilon, print_mode=print_mode)
+    game = GameManager(players, number_of_games, levels, discount, epsilon, print_mode=print_mode, counter_weights_list=counter_weights)
     game.run_game()  # run the test
     game.print_scoring_table()
 

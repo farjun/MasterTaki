@@ -28,8 +28,8 @@ class FeatureExtractors(object):
         return feature_list
 
     def get_feature_vector(self, state, action):
-        feature_vector = np.array([feature_score(state, action) for feature_score in self.feature_list])
-        return feature_vector
+        feature_vector = np.array([feature_score(state, action) for feature_score in self.feature_list], dtype=np.float64)
+        return feature_vector/10.0
 
     def __len__(self):
         return len(self.feature_list)
@@ -91,6 +91,7 @@ class FeatureExtractors(object):
                 return 1
             return 0
         return 1
+
     def finished_color(self, state: TwoPlayerState, action):
         """if all cards of state in the caller of top card are put down by the action"""
         color = state.get_top_card().get_color()

@@ -137,12 +137,12 @@ class ApproximateQAgent(ReinforcementAgent):
         """
            Should update your weights based on transition
         """
-        if not None:
+        if not action:
             return
-        reward = REWARD_FUNCTION(state, action,nextState)
+        reward = REWARD_FUNCTION(state, action, nextState)
         features = self.featExtractor.get_feature_vector(state, action)
         correction = (reward + self.discount * self.getValue(nextState)) - self.getQValue(state, action)
-        self.weights += self.alpha*correction*features  # TODO check that this np realy updates like it should
+        self.weights = self.weights + self.alpha*correction*features  # TODO check that this np realy updates like it should
 
     def get_weights(self):
         return self.weights
