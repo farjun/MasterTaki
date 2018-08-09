@@ -8,7 +8,7 @@ from matplotlib import pyplot
 
 mdp_weights_path = './weights/MDP_weights.pickle'
 pomdp_weights_path = './weights/POMDP_weights.pickle'
-approximate_weights_path = './weights/approximate_weights.pickle'
+approximate_weights_path = './weights/APPROXIMATE_weights.pickle'
 
 HEURISTIC = "-heuristic"
 ALPHA_BETA = "-alpha"
@@ -199,7 +199,7 @@ def load_and_train_reinforcement(approximate=False):
     counter_weights.append(check_pickle_file_path(pomdp_weights_path))
     counter_weights.append(check_pickle_file_path(approximate_weights_path))
     if approximate:
-        players = [["Ido", "H"], ["Shachar", "APPROXIMATE"]]
+        players = [["Ido", "H"], ["Shachar", "APPROX"]]
     else:
         players = [["Ido", "H"], ["Shachar", "POMDP"]]
     number_of_games = 50

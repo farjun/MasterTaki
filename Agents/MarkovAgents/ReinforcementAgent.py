@@ -10,7 +10,7 @@ REWARD_FUNCTION = total_cards_dropped_reward
 
 class ReinforcementAgent(PlayerInterface):
 
-    def __init__(self, game,discount, epsilon, POMDP_flag, counter_weights=None):
+    def __init__(self, game, discount, epsilon, POMDP_flag, counter_weights=None):
         if POMDP_flag:
             super().__init__("POMDPAgent", game)
         else:
@@ -116,9 +116,9 @@ class ApproximateQAgent(ReinforcementAgent):
        should work as is.
     """
 
-    def __init__(self, **args):
+    def __init__(self, game, discount, epsilon, POMDP_flag, counter_weights=None):
         self.featExtractor = FeatureExtractors()
-        ReinforcementAgent.__init__(self, **args)
+        ReinforcementAgent.__init__(self, game, discount, epsilon, POMDP_flag, counter_weights)
 
         # You might want to initialize weights here.
         self.weights = np.full(len(self.featExtractor), 0)
@@ -137,6 +137,8 @@ class ApproximateQAgent(ReinforcementAgent):
         """
            Should update your weights based on transition
         """
+        if not None:
+            return
         reward = REWARD_FUNCTION(state, action,nextState)
         features = self.featExtractor.get_feature_vector(state, action)
         correction = (reward + self.discount * self.getValue(nextState)) - self.getQValue(state, action)
