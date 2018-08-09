@@ -44,11 +44,11 @@ class GameManager:
             if player_details[1] == "E":
                 players[id] = [ExpectimaxAgent(self, [StateHeuristics.weight_heuristic], levels), "Expectimax", 0]
             if player_details[1] == "MDP":
-                players[id] = [ReinforcementAgent(self,discount, epsilon, POMDP_flag=False, counter_weights=counter_weights_list[0]), "MDPAgent", 0]
+                players[id] = [ReinforcementAgent(self, discount, epsilon, POMDP_flag=False, counter_weights=counter_weights_list[0]), "MDPAgent", 0]
             if player_details[1] == "POMDP":
-                players[id] = [ReinforcementAgent(self,discount, epsilon, POMDP_flag=True, counter_weights=counter_weights_list[1]), "POMDPAgent", 0]
+                players[id] = [ReinforcementAgent(self, discount, epsilon, POMDP_flag=True, counter_weights=counter_weights_list[1]), "POMDPAgent", 0]
             if player_details[1] == "APPROX":
-                players[id] = [ReinforcementAgent(self,discount, epsilon, POMDP_flag=True), "FeatureAgent", 0]
+                players[id] = [ReinforcementAgent(self, discount, epsilon, POMDP_flag=True, counter_weights=counter_weights_list[2]), "FeatureAgent", 0]
         return players
 
     def __deal_players(self):
