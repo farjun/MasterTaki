@@ -1,6 +1,8 @@
 import numpy as np
 import inspect
-
+from TakiGame.GameLogic.State import PartialStateTwoPlayer
+from TakiGame.DeckStuff.Card import SpecialNoColor, SpecialWithColor, Color
+from TakiGame.GameLogic.Action import Action
 
 class WeightsManager(object):
     def __init__(self):
@@ -30,13 +32,19 @@ class FeatureExtractors(object):
     def __len__(self):
         return len(self.feature_list)
 
-    def feature1(self, state, action):
-        print("ljsdghs")
+    def feature_cards_that_end_the_game(self, state:PartialStateTwoPlayer, action:Action):
+        # Checks if the last remaining card is a plus
+        if len(state.cur_player_cards) == 1:
+            card = state.cur_player_cards[0]
+            if card == SpecialWithColor.PLUS:
+                return 0
         return 1
 
-    def feature2(self, state, action):
-        print("wwwww")
-        return 2
+    def feature_plus_another_card(self, state:PartialStateTwoPlayer, action:Action):
+        hand = action.get_cards()
+        if hand[0] == SpecialWithColor.PLUS and len(hand) == 2:
+            return 1
+        return 0
 
     def feature3(self, state, action):
         print("aaaa")
