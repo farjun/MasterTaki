@@ -69,7 +69,14 @@ class FeatureExtractors(object):
     def feature_plus_another_card(self, state:PartialStateTwoPlayer, action: Action):
         # Checks if the action start with a plus and has the length of the action
         action = action.get_cards()
-        if action[0] == SpecialWithColor.PLUS and len(action) == 2:
+        if len(action) > 0 and action[0] == SpecialWithColor.PLUS and len(action) == 2:
+            return 1
+        return 0
+
+    def feature_stop_plus_another_card(self, state:PartialStateTwoPlayer, action: Action):
+        # Checks if the action start with a stop and has the length of the action
+        action = action.get_cards()
+        if len(action) > 0 and action[0] == SpecialWithColor.STOP and len(action) == 2:
             return 1
         return 0
 
@@ -91,26 +98,27 @@ class FeatureExtractors(object):
                 return 1
             return 0
         return 1
+
     def finished_color(self, state: TwoPlayerState, action):
         """if all cards of state in the caller of top card are put down by the action"""
-        coler = state.get_top_card().get_color()
+        color = state.get_top_card().get_color()
         f= False
         for card in action.get_cards():
-            if card.get_color() == coler: f= True
+            if card.get_color() == color: f= True
         if not f: return 0
         c= deletCards(state.get_cur_player_cards(), action.get_cards())
         for card in c:
-            if card.get_color() == coler: return 0
+            if card.get_color() == color: return 0
         return 1
-
 
     def have_color(self, state, action):
         """ have a card with color of top cards"""
-        coler = state.get_top_card().get_color()
+        color = state.get_top_card().get_color()
         for card in state.get_cur_player_cards():
-            if card.get_color() == coler:
+            if card.get_color() == color:
                 return 1
         return 0
+
 
 
 
