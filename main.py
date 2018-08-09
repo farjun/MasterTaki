@@ -15,9 +15,10 @@ EXPECTIMAX = "-expectimax"
 MDP = "-mdp"
 POMDP = "-pomdp"
 MANUAL = "-manual"
-DISCOUNT_INDEX = 10
-EPSILON_INDEX = 9
-LEVELS_INDEX = 8
+DISCOUNT = "-discount="
+EPSILON = "-epsilon="
+LEVELS = "-levels="
+PRINT_MODE = "-print_mode="
 
 
 def check_pickle_file_path(path):
@@ -35,19 +36,12 @@ def train_MDP_agent(game, number_of_training_for_session=1000):
     :param number_of_traning_for_session:
     :return: the number of new state-action combination he saw during the session
     """
-    # pre_session_number_of_state_observed = len(set([state for state, action in game.players[1][PLAYER].Q_values]))
-    # print("starting new session with current learned states : ", pre_session_number_of_state_observed)
     game.players[1][PLAYER].init_repeat_counter()
 
     for i in range(number_of_training_for_session):
         game.run_single_game(True)
 
-    # post_session_number_of_state_observed = len(set([state for state, action in game.players[1][PLAYER].Q_values]))
-    # print("ended new session with current learned states : ", post_session_number_of_state_observed)
-    # print("Difference in this iteration: ", post_session_number_of_state_observed - pre_session_number_of_state_observed)
     print("Number of repeated state-action updates: ", game.players[1][PLAYER].get_repeat_counter())
-
-    # return post_session_number_of_state_observed - pre_session_number_of_state_observed
 
 
 def save_weights_to_pickle_file(game):
@@ -124,13 +118,16 @@ def parse_optional_agruments(arguments):
     :return: levels,discount and epsilon parameters if they exists
     """
     levels = discount = epsilon = None
+    print_mode = False
     for param in arguments:
-        if param.startswith("-levels="):
-            levels = parse_levels_for_tree_agent(int(param[LEVELS_INDEX:]))
-        elif param.startswith("-discount="):
-            discount = float(param[DISCOUNT_INDEX:])
-        elif param.startswith("-epsilon="):
-            epsilon = float(param[EPSILON_INDEX:])
+        if param.startswith(LEVELS):
+            levels = parse_levels_for_tree_agent(int(param[len(LEVELS):]))
+        elif param.startswith(DISCOUNT):
+            discount = float(param[len(DISCOUNT):])
+        elif param.startswith(EPSILON):
+            epsilon = float(param[len(EPSILON):])
+        elif param.startswith(PRINT_MODE):
+            print_mode = param[len(PRINT_MODE):] == "True"
     # give them the default value
     if levels is None:
         levels = 2
@@ -138,7 +135,7 @@ def parse_optional_agruments(arguments):
         discount = 0.1
     if epsilon is None:
         epsilon = 0.05
-    return levels, discount, epsilon
+    return levels, discount, epsilon, print_mode
 
 
 def parser():
@@ -150,25 +147,25 @@ def parser():
         print("wrong usage: two players must enter the game and the number of games must be specified")
         exit(1)
 
-    if len(sys.argv) > 7:
+    if len(sys.argv) > 8:
         print("wrong usage of the script parameters")
     players = parse_agent(sys.argv[1:3])
     number_of_games = parse_num_of_games(sys.argv[3])
     levels = discount = epsilon = None
     if len(sys.argv) > 4:
         arguments = sys.argv[4:]
-        levels, discount, epsilon = parse_optional_agruments(arguments)
+        levels, discount, epsilon, print_mode = parse_optional_agruments(arguments)
 
-    return players, number_of_games, levels, discount, epsilon
+    return players, number_of_games, levels, discount, epsilon, print_mode
 
 
 def test_alphabeta_vs_reflex(num_of_iterations):
-    players, number_of_games, levels, discount, epsilon = parser()
+    players, number_of_games, levels, discount, epsilon, print_mode = parser()
     winning_percentages = [0]*num_of_iterations
     timed_out_counter = 0
     for i in range(num_of_iterations):
         print("Start iteration number %d" % (i+1))
-        game = GameManager(players, number_of_games, levels, discount, epsilon, print_mode=False)
+        game = GameManager(players, number_of_games, levels, discount, epsilon, print_mode=print_mode)
         game.run_game()  # run the test
         game.print_scoring_table()
         winning_percentages[i-1] = game.get_player_score(0)/number_of_games  # insert alphabeta agent index
@@ -199,8 +196,8 @@ def load_and_train_MDP():
 
 
 def run_from_parser():
-    players, number_of_games, levels, discount, epsilon = parser()
-    game = GameManager(players, number_of_games, levels, discount, epsilon, print_mode=True)
+    players, number_of_games, levels, discount, epsilon, print_mode = parser()
+    game = GameManager(players, number_of_games, levels, discount, epsilon, print_mode=print_mode)
     game.run_game()  # run the test
     game.print_scoring_table()
 

@@ -241,8 +241,9 @@ class LogicExecutor:
         Print end game message and update scoring table.
         """
         self.game.cur_player_index = max(self.game.cur_player_index, 0)  # final action was king action
-        if not simoulate and self.game.print_mode:
-            print("\n******\nPlayer %d is the winner\n******\n" % (self.game.cur_player_index + 1))
+        if not simoulate:
+            if self.game.print_mode:
+                print("\n******\nPlayer %d is the winner\n******\n" % (self.game.cur_player_index + 1))
             self.game.players[self.game.cur_player_index][PLAYER_SCORE] += 1
         self.game.end_game = True
 
