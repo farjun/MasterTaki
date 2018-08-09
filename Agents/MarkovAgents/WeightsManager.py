@@ -73,7 +73,7 @@ class FeatureExtractors(object):
             return 1
         return 0
 
-    def feature_taki_length(self, state:PartialStateTwoPlayer, action:Action):
+    def feature_taki_length(self, state: PartialStateTwoPlayer, action:Action):
         # A feature that checks the length of the action if it start with taki
         action = action.get_cards()
         if action[0] == SpecialWithColor.TAKI or action.begin_with_super_taki():
