@@ -6,8 +6,8 @@ from collections import Counter
 import sys
 from matplotlib import pyplot
 
-mdp_weights_path = '/tmp/weights/MDP_weights.pickle'
-pomdp_weights_path = '/tmp/weights/POMDP_weights.pickle'
+mdp_weights_path = './weights/MDP_weights.pickle'
+pomdp_weights_path = './weights/POMDP_weights.pickle'
 
 HEURISTIC = "-heuristic"
 ALPHA_BETA = "-alpha"
@@ -41,6 +41,7 @@ def train_MDP_agent(game, number_of_training_for_session=1000):
     for i in range(number_of_training_for_session):
         game.run_single_game(True)
 
+    print("Number of NON repeated state-action updates: ", game.players[1][PLAYER].get_non_repeat_counter())
     print("Number of repeated state-action updates: ", game.players[1][PLAYER].get_repeat_counter())
 
 
@@ -111,7 +112,7 @@ def parse_levels_for_tree_agent(levels):
     exit(1)
 
 
-def parse_optional_agruments(arguments):
+def parse_optional_arguments(arguments):
     """
     Extract the levels,discount and epsilon parameters if they exists
     :param arguments: an unknown number of parameters
@@ -152,9 +153,10 @@ def parser():
     players = parse_agent(sys.argv[1:3])
     number_of_games = parse_num_of_games(sys.argv[3])
     levels = discount = epsilon = None
+    print_mode = False
     if len(sys.argv) > 4:
         arguments = sys.argv[4:]
-        levels, discount, epsilon, print_mode = parse_optional_agruments(arguments)
+        levels, discount, epsilon, print_mode = parse_optional_arguments(arguments)
 
     return players, number_of_games, levels, discount, epsilon, print_mode
 
@@ -190,7 +192,9 @@ def load_and_train_MDP():
     game = GameManager(players, number_of_games, levels=2, epsilon=0.05, discount=0.1, print_mode=False, counter_weights_list=counter_weights)
 
     for i in range(1, 1001):
+        print("Start train session")
         train_MDP_agent(game, number_of_training)
+        print("End train session")
         if i % 30 == 0:
             save_weights_to_pickle_file(game)
 
@@ -203,9 +207,9 @@ def run_from_parser():
 
 
 if __name__ == '__main__':
-    # load_and_train_MDP()
+    load_and_train_MDP()
     # run_from_parser()
-    test_alphabeta_vs_reflex(10)
+    # test_alphabeta_vs_reflex(5)
 
 
 
