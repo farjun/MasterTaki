@@ -56,7 +56,7 @@ class FeatureExtractors(object):
     def feature_is_stop_exists(self,  state:PartialStateTwoPlayer, action:Action):
         return 1 if action.action_is_stop() else 0
 
-    def feature_cards_that_end_the_game(self, state:PartialStateTwoPlayer, action:Action):
+    def feature_plus_at_the_end(self, state:PartialStateTwoPlayer, action:Action):
         # Checks if the last remaining card is a plus
         if len(state.cur_player_cards) == 1:
             card = state.cur_player_cards[0]
@@ -73,19 +73,24 @@ class FeatureExtractors(object):
 
     def feature_taki_length(self, state:PartialStateTwoPlayer, action:Action):
         # A feature that checks the length of the action if it start with taki
-        action = action.get_cards()
-        if action[0] == SpecialWithColor.TAKI or action[0] == SpecialNoColor.SUPER_TAKI:
-            if len(action) > 4:
+        act = action.get_cards()
+        if act[0] == SpecialWithColor.TAKI or action.begin_with_super_taki():
+            if len(act) > 4:
                 return 1
-            elif len(action) > 2:
+            elif len(act) > 2:
                 return 0.7
             return 0.4
         return 0
 
+    def feature_end_game_plus2(self, state: PartialStateTwoPlayer, action: Action):
+        # Check if the opponent is close to winning in and your action is plus 2
+        if state.get_other_player_info() == 1:
+            if action.action_is_plus_2():
+                return 1
+            return 0
+        return 1
 
-    def feature10(self, state, action):
-        print("sssss")
-        return 4
+
 
 
 w = WeightsManager()
