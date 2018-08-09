@@ -64,12 +64,23 @@ class FeatureExtractors(object):
                 return 0
         return 1
 
-    def feature_plus_another_card(self, state:PartialStateTwoPlayer, action:Action):
-        hand = action.get_cards()
-        if hand[0] == SpecialWithColor.PLUS and len(hand) == 2:
+    def feature_plus_another_card(self, state:PartialStateTwoPlayer, action: Action):
+        # Checks if the action start with a plus and has the length of the action
+        action = action.get_cards()
+        if action[0] == SpecialWithColor.PLUS and len(action) == 2:
             return 1
         return 0
 
+    def feature_taki_length(self, state:PartialStateTwoPlayer, action:Action):
+        # A feature that checks the length of the action if it start with taki
+        action = action.get_cards()
+        if action[0] == SpecialWithColor.TAKI or action[0] == SpecialNoColor.SUPER_TAKI:
+            if len(action) > 4:
+                return 1
+            elif len(action) > 2:
+                return 0.7
+            return 0.4
+        return 0
 
 
     def feature10(self, state, action):
