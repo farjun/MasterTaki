@@ -10,7 +10,7 @@ REWARD_FUNCTION = total_cards_dropped_reward
 
 class ReinforcementAgent(PlayerInterface):
 
-    def __init__(self, game,discount, epsilon, POMDP_flag, counter_weights):
+    def __init__(self, game,discount, epsilon, POMDP_flag, counter_weights=None):
         if POMDP_flag:
             super().__init__("POMDPAgent", game)
         else:
