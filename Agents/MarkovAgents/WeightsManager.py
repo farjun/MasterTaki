@@ -58,7 +58,7 @@ class FeatureExtractors(object):
     def feature_is_stop_exists(self,  state:PartialStateTwoPlayer, action:Action):
         return 1 if action.action_is_stop() else 0
 
-    def feature_cards_that_end_the_game(self, state:PartialStateTwoPlayer, action:Action):
+    def feature_plus_at_the_end(self, state:PartialStateTwoPlayer, action:Action):
         # Checks if the last remaining card is a plus
         if len(state.cur_player_cards) == 1:
             card = state.cur_player_cards[0]
@@ -70,6 +70,13 @@ class FeatureExtractors(object):
         # Checks if the action start with a plus and has the length of the action
         action_cards = action.get_cards()
         if len(action_cards) > 0 and action_cards[0].get_value() == SpecialWithColor.PLUS and len(action_cards) == 2:
+            return 1
+        return 0
+
+    def feature_stop_plus_another_card(self, state: PartialStateTwoPlayer, action: Action):
+        # Checks if the action start with a stop and has the length of the action
+        action = action.get_cards()
+        if len(action) > 0 and action[0] == SpecialWithColor.STOP and len(action) == 2:
             return 1
         return 0
 
@@ -94,14 +101,14 @@ class FeatureExtractors(object):
 
     def finished_color(self, state: TwoPlayerState, action):
         """if all cards of state in the caller of top card are put down by the action"""
-        color = state.get_top_card().get_color()
-        f = False
+        coler = state.get_top_card().get_color()
+        f= False
         for card in action.get_cards():
-            if card.get_color() == color: f = True
+            if card.get_color() == coler: f= True
         if not f: return 0
-        c = deleteCardes(state.get_cur_player_cards(), action.get_cards())
+        c= deletCards(state.get_cur_player_cards(), action.get_cards())
         for card in c:
-            if card.get_color() == color: return 0
+            if card.get_color() == coler: return 0
         return 1
 
 
@@ -114,8 +121,13 @@ class FeatureExtractors(object):
         return 0
 
 
-def deleteCardes(cards_list, cards):
-    c = []
+
+
+w = WeightsManager()
+print(w.get_score(None, None))
+
+def deletCards(cards_list, cards):
+    c= []
     for card in cards_list:
         if card not in cards: c.append(card)
     return c
