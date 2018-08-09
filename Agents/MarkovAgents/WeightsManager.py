@@ -39,6 +39,7 @@ class FeatureExtractors(object):
             if card == SpecialWithColor.PLUS:
                 return 0
         return 1
+
     def feature1(self, state, action):
         return 1 if action.action_is_change_color() else 0
 
