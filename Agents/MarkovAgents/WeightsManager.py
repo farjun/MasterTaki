@@ -1,5 +1,6 @@
 import numpy as np
 import inspect
+from TakiGame.GameLogic.State import TwoPlayerState
 
 
 class WeightsManager(object):
@@ -54,11 +55,34 @@ class FeatureExtractors(object):
     def feature8(self, state, action):
         return 1 if action.action_is_stop() else 0
 
+    def finished_color(self, state: TwoPlayerState, action):
+        """if all cards of state in the caller of top card are put down by the action"""
+        coler = state.get_top_card().get_color()
+        f= False
+        for card in action.get_cards():
+            if card.get_color() == coler: f= True
+        if not f: return 0
+        c= deletCardes(state.get_cur_player_cards(), action.get_cards())
+        for card in c:
+            if card.get_color() == coler: return 0
+        return 1
 
-    def feature10(self, state, action):
-        print("sssss")
-        return 4
+    def have_color(self, state, action):
+        """ have a card with color of top cards"""
+        coler = state.get_top_card().get_color()
+        for card in state.get_cur_player_cards():
+            if card.get_color() == coler:
+                return 1
+        return 0
+
+
 
 
 w = WeightsManager()
 print(w.get_score(None, None))
+
+def deletCardes(cards_list, cards):
+    c= []
+    for card in cards_list:
+        if card not in cards: c.append(card)
+    return c
