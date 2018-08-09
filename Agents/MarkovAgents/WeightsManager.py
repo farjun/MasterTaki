@@ -1,5 +1,8 @@
 import numpy as np
 import inspect
+from TakiGame.GameLogic.State import PartialStateTwoPlayer
+from TakiGame.DeckStuff.Card import SpecialNoColor, SpecialWithColor, Color
+from TakiGame.GameLogic.Action import Action
 from TakiGame.GameLogic.State import TwoPlayerState
 
 
@@ -31,29 +34,55 @@ class FeatureExtractors(object):
     def __len__(self):
         return len(self.feature_list)
 
-    def feature1(self, state, action):
+    def feature_is_change_color_exists(self, state:PartialStateTwoPlayer, action:Action):
         return 1 if action.action_is_change_color() else 0
 
-    def feature2(self, state, action):
+    def feature_start_with_super_taki(self, state:PartialStateTwoPlayer, action:Action):
         return 1 if action.begin_with_super_taki() else 0
 
-    def feature3(self, state, action):
+    def feature_is_draw_cards(self, state:PartialStateTwoPlayer, action:Action):
         return 1 if action.action_is_draw() else 0
 
-    def feature4(self, state, action):
+    def feature_is_change_direction_exists(self, state:PartialStateTwoPlayer, action:Action):
         return 1 if action.action_is_change_direction() else 0
 
-    def feature5(self, state, action):
+    def feature_is_king_exists(self, state:PartialStateTwoPlayer, action:Action):
         return 1 if action.action_is_king() else 0
 
-    def feature6(self, state, action):
+    def feature_is_plus_exists(self, state:PartialStateTwoPlayer, action:Action):
         return 1 if action.action_is_plus() else 0
 
-    def feature7(self, state, action):
+    def feature_is_plus2_exists(self, state:PartialStateTwoPlayer, action:Action):
         return 1 if action.action_is_plus_2() else 0
 
-    def feature8(self, state, action):
+    def feature_is_stop_exists(self,  state:PartialStateTwoPlayer, action:Action):
         return 1 if action.action_is_stop() else 0
+
+    def feature_cards_that_end_the_game(self, state:PartialStateTwoPlayer, action:Action):
+        # Checks if the last remaining card is a plus
+        if len(state.cur_player_cards) == 1:
+            card = state.cur_player_cards[0]
+            if card == SpecialWithColor.PLUS:
+                return 0
+        return 1
+
+    def feature_plus_another_card(self, state:PartialStateTwoPlayer, action: Action):
+        # Checks if the action start with a plus and has the length of the action
+        action = action.get_cards()
+        if action[0] == SpecialWithColor.PLUS and len(action) == 2:
+            return 1
+        return 0
+
+    def feature_taki_length(self, state:PartialStateTwoPlayer, action:Action):
+        # A feature that checks the length of the action if it start with taki
+        action = action.get_cards()
+        if action[0] == SpecialWithColor.TAKI or action[0] == SpecialNoColor.SUPER_TAKI:
+            if len(action) > 4:
+                return 1
+            elif len(action) > 2:
+                return 0.7
+            return 0.4
+        return 0
 
     def finished_color(self, state: TwoPlayerState, action):
         """if all cards of state in the caller of top card are put down by the action"""
