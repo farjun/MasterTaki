@@ -15,6 +15,7 @@ EXPECTIMAX = "-expectimax"
 MDP = "-mdp"
 POMDP = "-pomdp"
 MANUAL = "-manual"
+APPROX = "-approximate"
 DISCOUNT = "-discount="
 EPSILON = "-epsilon="
 LEVELS = "-levels="
@@ -80,6 +81,8 @@ def parse_agent(agents_type):
             agents.append(["player_{}".format(i), "POMDP"])
         elif agents_type[i] == MANUAL:
             agents.append(["player_{}".format(i), "M"])
+        elif agents_type[i] == APPROX:
+            agents.append(["player_{}".format(i), "APPROX"])
         else:
             print("wrong usage: agent wasn't recognised")
             exit(1)
