@@ -3,6 +3,7 @@ from Agents.Rewards import total_cards_dropped_reward, TERMINAL_STATE_SCORE
 from TakiGame.Players.PlayerInterface import PlayerInterface
 from util import flipCoin
 import numpy as np
+from Agents.MarkovAgents.WeightsManager import FeatureExtractors
 
 REWARD_FUNCTION = total_cards_dropped_reward
 
@@ -105,4 +106,44 @@ class ReinforcementAgent(PlayerInterface):
     def get_non_repeat_counter(self):
         return self.non_repeat_state_action_counter
 
+
+class ApproximateQAgent (ReinforcementAgent):
+    """
+       ApproximateQLearningAgent
+
+       You should only have to overwrite getQValue
+       and update.  All other QLearningAgent functions
+       should work as is.
+    """
+
+    def __init__(self, extractor='IdentityExtractor', **args):
+        self.featExtractor = FeatureExtractors()
+        ReinforcementAgent.__init__(self, **args)
+
+        # You might want to initialize weights here.
+        "*** YOUR CODE HERE ***"
+        self.weights = np.array([])
+
+    def getQValue(self, state, action):
+        """
+          Should return Q(state,action) = w * featureVector
+          where * is the dotProduct operator
+        """
+        "*** YOUR CODE HERE ***"
+        if state is None or action is None:
+            return 0
+        features = self.featExtractor.get_feature_vector(state,action)
+        return sum([self.weights[feat] * features[feat] for feat in features.sortedKeys()])
+
+
+
+    def update(self, state, action, nextState):
+        """
+           Should update your weights based on transition
+        """
+        "*** YOUR CODE HERE ***"
+        reward = REWARD_FUNCTION(state, action,nextState)
+        features = self.featExtractor.get_feature_vector(state, action)
+        correction = (reward + self.discount * self.getValue(nextState)) - self.getQValue(state, action)
+        self.weights += self.alpha*correction*features #TODO check that this np realy updates like it should
 
