@@ -62,14 +62,14 @@ class FeatureExtractors(object):
         # Checks if the last remaining card is a plus
         if len(state.cur_player_cards) == 1:
             card = state.cur_player_cards[0]
-            if card == SpecialWithColor.PLUS:
+            if card.get_value() == SpecialWithColor.PLUS:
                 return 0
         return 1
 
     def feature_plus_another_card(self, state:PartialStateTwoPlayer, action: Action):
         # Checks if the action start with a plus and has the length of the action
-        action = action.get_cards()
-        if len(action) > 0 and action[0] == SpecialWithColor.PLUS and len(action) == 2:
+        action_cards = action.get_cards()
+        if len(action_cards) > 0 and action_cards[0].get_value() == SpecialWithColor.PLUS and len(action_cards) == 2:
             return 1
         return 0
 
@@ -82,11 +82,11 @@ class FeatureExtractors(object):
 
     def feature_taki_length(self, state: PartialStateTwoPlayer, action:Action):
         # A feature that checks the length of the action if it start with taki
-        action = action.get_cards()
-        if action[0] == SpecialWithColor.TAKI or action.begin_with_super_taki():
-            if len(action) > 4:
+        action_cards = action.get_cards()
+        if len(action_cards) > 0 and (action_cards[0].get_value() == SpecialWithColor.TAKI or action_cards[0].get_value() == SpecialNoColor.SUPER_TAKI):
+            if len(action_cards) > 4:
                 return 1
-            elif len(action) > 2:
+            elif len(action_cards) > 2:
                 return 0.7
             return 0.4
         return 0
@@ -98,27 +98,26 @@ class FeatureExtractors(object):
                 return 1
             return 0
         return 1
-
     def finished_color(self, state: TwoPlayerState, action):
         """if all cards of state in the caller of top card are put down by the action"""
-        color = state.get_top_card().get_color()
+        coler = state.get_top_card().get_color()
         f= False
         for card in action.get_cards():
-            if card.get_color() == color: f= True
+            if card.get_color() == coler: f= True
         if not f: return 0
         c= deletCards(state.get_cur_player_cards(), action.get_cards())
         for card in c:
-            if card.get_color() == color: return 0
+            if card.get_color() == coler: return 0
         return 1
+
 
     def have_color(self, state, action):
         """ have a card with color of top cards"""
-        color = state.get_top_card().get_color()
+        coler = state.get_top_card().get_color()
         for card in state.get_cur_player_cards():
-            if card.get_color() == color:
+            if card.get_color() == coler:
                 return 1
         return 0
-
 
 
 
