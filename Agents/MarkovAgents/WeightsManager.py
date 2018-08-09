@@ -39,18 +39,37 @@ class FeatureExtractors(object):
             if card == SpecialWithColor.PLUS:
                 return 0
         return 1
+    def feature1(self, state, action):
+        return 1 if action.action_is_change_color() else 0
 
     def feature_plus_another_card(self, state:PartialStateTwoPlayer, action:Action):
         hand = action.get_cards()
         if hand[0] == SpecialWithColor.PLUS and len(hand) == 2:
             return 1
         return 0
+    def feature2(self, state, action):
+        return 1 if action.begin_with_super_taki() else 0
 
     def feature3(self, state, action):
-        print("aaaa")
-        return 3
+        return 1 if action.action_is_draw() else 0
 
     def feature4(self, state, action):
+        return 1 if action.action_is_change_direction() else 0
+
+    def feature5(self, state, action):
+        return 1 if action.action_is_king() else 0
+
+    def feature6(self, state, action):
+        return 1 if action.action_is_plus() else 0
+
+    def feature7(self, state, action):
+        return 1 if action.action_is_plus_2() else 0
+
+    def feature8(self, state, action):
+        return 1 if action.action_is_stop() else 0
+
+
+    def feature10(self, state, action):
         print("sssss")
         return 4
 
