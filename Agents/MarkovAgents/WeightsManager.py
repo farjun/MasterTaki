@@ -3,6 +3,8 @@ import inspect
 from TakiGame.GameLogic.State import PartialStateTwoPlayer
 from TakiGame.DeckStuff.Card import SpecialNoColor, SpecialWithColor, Color
 from TakiGame.GameLogic.Action import Action
+from TakiGame.GameLogic.State import TwoPlayerState
+
 
 class WeightsManager(object):
     def __init__(self):
@@ -73,11 +75,11 @@ class FeatureExtractors(object):
 
     def feature_taki_length(self, state:PartialStateTwoPlayer, action:Action):
         # A feature that checks the length of the action if it start with taki
-        act = action.get_cards()
-        if act[0] == SpecialWithColor.TAKI or action.begin_with_super_taki():
-            if len(act) > 4:
+        action = action.get_cards()
+        if action[0] == SpecialWithColor.TAKI or action.begin_with_super_taki():
+            if len(action) > 4:
                 return 1
-            elif len(act) > 2:
+            elif len(action) > 2:
                 return 0.7
             return 0.4
         return 0
@@ -89,9 +91,35 @@ class FeatureExtractors(object):
                 return 1
             return 0
         return 1
+    def finished_color(self, state: TwoPlayerState, action):
+        """if all cards of state in the caller of top card are put down by the action"""
+        coler = state.get_top_card().get_color()
+        f= False
+        for card in action.get_cards():
+            if card.get_color() == coler: f= True
+        if not f: return 0
+        c= deletCards(state.get_cur_player_cards(), action.get_cards())
+        for card in c:
+            if card.get_color() == coler: return 0
+        return 1
+
+
+    def have_color(self, state, action):
+        """ have a card with color of top cards"""
+        coler = state.get_top_card().get_color()
+        for card in state.get_cur_player_cards():
+            if card.get_color() == coler:
+                return 1
+        return 0
 
 
 
 
 w = WeightsManager()
 print(w.get_score(None, None))
+
+def deletCards(cards_list, cards):
+    c= []
+    for card in cards_list:
+        if card not in cards: c.append(card)
+    return c

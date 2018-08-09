@@ -8,6 +8,7 @@ from matplotlib import pyplot
 
 mdp_weights_path = './weights/MDP_weights.pickle'
 pomdp_weights_path = './weights/POMDP_weights.pickle'
+approximate_weights_path = './weights/approximate_weights.pickle'
 
 HEURISTIC = "-heuristic"
 ALPHA_BETA = "-alpha"
@@ -44,6 +45,8 @@ def train_MDP_agent(game, number_of_training_for_session=1000):
 
     print("Number of NON repeated state-action updates: ", game.players[1][PLAYER].get_non_repeat_counter())
     print("Number of repeated state-action updates: ", game.players[1][PLAYER].get_repeat_counter())
+    if game.players[1][PLAYER_TYPE] == "FeatureAgent":
+        print("Current weights: ", game.players[1][PLAYER].get_weights())
 
 
 def save_weights_to_pickle_file(game):
@@ -57,6 +60,11 @@ def save_weights_to_pickle_file(game):
         if player[PLAYER_TYPE] == "MDPAgent":
             counter_to_save = player[PLAYER].Q_values
             with open(mdp_weights_path, 'wb') as outputfile:
+                pickle.dump(counter_to_save, outputfile)
+
+        if player[PLAYER_TYPE] == "FeatureAgent":
+            counter_to_save = player[PLAYER].Q_values
+            with open(approximate_weights_path, 'wb') as outputfile:
                 pickle.dump(counter_to_save, outputfile)
     print("end save pickles")
 
@@ -185,11 +193,15 @@ def test_alphabeta_vs_reflex(num_of_iterations):
     pyplot.show()
 
 
-def load_and_train_MDP():
+def load_and_train_reinforcement(approximate=False):
     counter_weights = list()
     counter_weights.append(check_pickle_file_path(mdp_weights_path))
     counter_weights.append(check_pickle_file_path(pomdp_weights_path))
-    players = [["Ido", "H"], ["Shachar", "POMDP"]]
+    counter_weights.append(check_pickle_file_path(approximate_weights_path))
+    if approximate:
+        players = [["Ido", "H"], ["Shachar", "APPROXIMATE"]]
+    else:
+        players = [["Ido", "H"], ["Shachar", "POMDP"]]
     number_of_games = 50
     number_of_training = 1000
     game = GameManager(players, number_of_games, levels=2, epsilon=0.05, discount=0.1, print_mode=False, counter_weights_list=counter_weights)
@@ -210,7 +222,7 @@ def run_from_parser():
 
 
 if __name__ == '__main__':
-    load_and_train_MDP()
+    load_and_train_reinforcement(True)
     # run_from_parser()
     # test_alphabeta_vs_reflex(5)
 

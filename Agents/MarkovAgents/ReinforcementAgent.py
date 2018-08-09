@@ -107,7 +107,7 @@ class ReinforcementAgent(PlayerInterface):
         return self.non_repeat_state_action_counter
 
 
-class ApproximateQAgent (ReinforcementAgent):
+class ApproximateQAgent(ReinforcementAgent):
     """
        ApproximateQLearningAgent
 
@@ -116,34 +116,32 @@ class ApproximateQAgent (ReinforcementAgent):
        should work as is.
     """
 
-    def __init__(self, extractor='IdentityExtractor', **args):
+    def __init__(self, **args):
         self.featExtractor = FeatureExtractors()
         ReinforcementAgent.__init__(self, **args)
 
         # You might want to initialize weights here.
-        "*** YOUR CODE HERE ***"
-        self.weights = np.array([])
+        self.weights = np.full(len(self.featExtractor), 0)
 
     def getQValue(self, state, action):
         """
           Should return Q(state,action) = w * featureVector
           where * is the dotProduct operator
         """
-        "*** YOUR CODE HERE ***"
         if state is None or action is None:
             return 0
-        features = self.featExtractor.get_feature_vector(state,action)
-        return sum([self.weights[feat] * features[feat] for feat in features.sortedKeys()])
-
-
+        features = self.featExtractor.get_feature_vector(state, action)
+        return np.dot(self.weights, features)
 
     def update(self, state, action, nextState):
         """
            Should update your weights based on transition
         """
-        "*** YOUR CODE HERE ***"
         reward = REWARD_FUNCTION(state, action,nextState)
         features = self.featExtractor.get_feature_vector(state, action)
         correction = (reward + self.discount * self.getValue(nextState)) - self.getQValue(state, action)
-        self.weights += self.alpha*correction*features #TODO check that this np realy updates like it should
+        self.weights += self.alpha*correction*features  # TODO check that this np realy updates like it should
+
+    def get_weights(self):
+        return self.weights
 
