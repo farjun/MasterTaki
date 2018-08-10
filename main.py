@@ -204,7 +204,7 @@ def load_and_train_reinforcement(approximate=False):
     if approximate:
         players = [["Ido", "H"], ["Shachar", "APPROX"]]
     else:
-        players = [["Ido", "H"], ["Shachar", "POMDP"]]
+        players = [["Ido", "H"], ["Shachar", "H"]]
     number_of_games = 50
     number_of_training = 1000
     game = GameManager(players, number_of_games, levels=2, epsilon=0.05, discount=0.1, print_mode=False, counter_weights_list=counter_weights)

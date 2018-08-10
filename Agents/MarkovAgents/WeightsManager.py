@@ -23,7 +23,7 @@ class FeatureExtractors(object):
     def init_method_list(self, full_method_list):
         feature_list = []
         for name, method in full_method_list:
-            if name.startswith("feature"):
+            if name.startswith("feature_active"):
                 feature_list.append(method)
         return feature_list
 
@@ -83,7 +83,8 @@ class FeatureExtractors(object):
     def feature_taki_length(self, state: PartialStateTwoPlayer, action:Action):
         # A feature that checks the length of the action if it start with taki
         action_cards = action.get_cards()
-        if len(action_cards) > 0 and (action_cards[0].get_value() == SpecialWithColor.TAKI or action_cards[0].get_value() == SpecialNoColor.SUPER_TAKI):
+        if len(action_cards) > 0 and (action_cards[0].get_value() == SpecialWithColor.TAKI or
+                                              action_cards[0].get_value() == SpecialNoColor.SUPER_TAKI):
             if len(action_cards) > 4:
                 return 1
             elif len(action_cards) > 2:
@@ -99,35 +100,68 @@ class FeatureExtractors(object):
             return 0
         return 1
 
-    def finished_color(self, state: TwoPlayerState, action):
+    def feature_finished_color(self, state: PartialStateTwoPlayer, action: Action):
         """if all cards of state in the caller of top card are put down by the action"""
-        coler = state.get_top_card().get_color()
-        f= False
+        color = state.get_top_card().get_color()
+        f = False
         for card in action.get_cards():
-            if card.get_color() == coler: f= True
-        if not f: return 0
-        c= deletCards(state.get_cur_player_cards(), action.get_cards())
+            if card.get_color() == color: f= True
+        if not f:
+            return 0
+        c = delete_cards(state.get_cur_player_cards(), action.get_cards())
         for card in c:
-            if card.get_color() == coler: return 0
+            if card.get_color() == color: return 0
         return 1
 
-
-    def have_color(self, state, action):
+    def feature_have_color(self, state: PartialStateTwoPlayer, action: Action):
         """ have a card with color of top cards"""
-        coler = state.get_top_card().get_color()
+        color = state.get_top_card().get_color()
         for card in state.get_cur_player_cards():
-            if card.get_color() == coler:
+            if card.get_color() == color:
                 return 1
         return 0
 
+    def feature_active_color_after_change_color(self, state: PartialStateTwoPlayer, action: Action):
+        """feature that represent the amount of cards the player have that are in the same color as the active color"""
+        if action.action_is_draw():
+            return 0
+        new_active_color = action.get_active_color()
+        if (state.get_top_card().get_color() != new_active_color and new_active_color != Color.NO_COLOR) or \
+            (state.get_top_card().get_color() == Color.NO_COLOR and action.cards_to_put[-1].get_color() != Color.NO_COLOR):
+
+            # count the cards in the hand that are in the same color as the active color
+            hand_after_action = delete_cards(state.get_cur_player_cards(), action.get_cards())
+            counter = color_counter(hand_after_action, new_active_color)
+
+            if counter > 2:
+                return 1
+            elif 0 < counter < 2:
+                return 0.5
+            else:
+                return 0
+        return 0
 
 
+#w = WeightsManager()
+#print(w.get_score(None, None))
 
-w = WeightsManager()
-print(w.get_score(None, None))
 
-def deletCards(cards_list, cards):
+def delete_cards(cards_list, cards):
     c= []
     for card in cards_list:
         if card not in cards: c.append(card)
     return c
+
+
+def color_counter(hand, active_color):
+    """
+    Find how many cards the player got in his hand that are in the active color
+    :param hand: The cards that are in the player's hand
+    :param active_color: The top of the pile color
+    :return: A counter
+    """
+    counter = 0
+    for card in hand:
+        if card.get_color() == active_color:
+            counter += 1
+    return counter
