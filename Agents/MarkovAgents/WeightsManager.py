@@ -23,7 +23,7 @@ class FeatureExtractors(object):
     def init_method_list(self, full_method_list):
         feature_list = []
         for name, method in full_method_list:
-            if name.startswith("feature_has_p"):
+            if name.startswith("feature_smaller"):
                 feature_list.append(method)
         return feature_list
 
@@ -237,6 +237,17 @@ class FeatureExtractors(object):
             if card.get_value() == SpecialWithColor.PLUS_2:
                 return 1
         return 0
+
+    def feature_has_small_hand(self, state: PartialStateTwoPlayer, action: Action):
+        if len(state.get_cur_player_cards()) < 3:
+            return 1
+        return 0
+
+    def feature_smaller_hand_than_the_opponent(self, state: PartialStateTwoPlayer, action: Action):
+        if len(state.get_cur_player_cards()) < state.get_other_player_info():
+            return 1
+        return 0
+
 
 def delete_cards(cards_list, cards):
     c = []
