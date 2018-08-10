@@ -1,11 +1,13 @@
-import numpy as np
 import copy
-import scipy.special as scipy
-from util import Counter, random_hand
-from TakiGame.Players.PlayerInterface import PlayerInterface
-import signal
 import random
+import signal
 from contextlib import contextmanager
+
+import numpy as np
+import scipy.special as scipy
+
+from Agents.PlayerInterface import PlayerInterface
+from util import Counter, random_hand
 
 
 class TimeoutException(Exception): pass

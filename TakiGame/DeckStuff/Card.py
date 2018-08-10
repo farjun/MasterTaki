@@ -14,7 +14,6 @@ class Color(Enum):
 
 class Number(Enum):
     ONE = 1
-    # TWO = 2 - apparently two and plus two is the same card
     THREE = 3
     FOUR = 4
     FIVE = 5

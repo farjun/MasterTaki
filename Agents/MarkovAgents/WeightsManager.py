@@ -4,7 +4,6 @@ from TakiGame.GameLogic.State import PartialStateTwoPlayer
 from TakiGame.DeckStuff.Card import SpecialNoColor, SpecialWithColor, Color
 from TakiGame.GameLogic.Action import Action
 from TakiGame.GameLogic.State import TwoPlayerState
-from TakiGame.DeckStuff.Card import Card
 
 
 class WeightsManager(object):
@@ -84,8 +83,7 @@ class FeatureExtractors(object):
     def feature_taki_length(self, state: PartialStateTwoPlayer, action:Action):
         # A feature that checks the length of the action if it start with taki
         action_cards = action.get_cards()
-        if len(action_cards) > 0 and (action_cards[0].get_value() == SpecialWithColor.TAKI or
-                                              action_cards[0].get_value() == SpecialNoColor.SUPER_TAKI):
+        if len(action_cards) > 0 and (action_cards[0].get_value() == SpecialWithColor.TAKI or action_cards[0].get_value() == SpecialNoColor.SUPER_TAKI):
             if len(action_cards) > 4:
                 return 1
             elif len(action_cards) > 2:
@@ -148,14 +146,12 @@ class FeatureExtractors(object):
             return 1
         return 0
 
-#w = WeightsManager()
-#print(w.get_score(None, None))
-
 
 def delete_cards(cards_list, cards):
-    c= []
+    c = []
     for card in cards_list:
-        if card not in cards: c.append(card)
+        if card not in cards:
+            c.append(card)
     return c
 
 

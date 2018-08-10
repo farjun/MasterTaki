@@ -1,5 +1,7 @@
-from TakiGame.Players.PlayerInterface import PlayerInterface
 import numpy as np
+
+from Agents.PlayerInterface import PlayerInterface
+
 
 class HeuristicReflexAgent(PlayerInterface):
 

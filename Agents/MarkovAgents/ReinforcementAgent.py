@@ -1,9 +1,11 @@
 import random
-from Agents.Rewards import total_cards_dropped_reward, TERMINAL_STATE_SCORE
-from TakiGame.Players.PlayerInterface import PlayerInterface
-from util import flipCoin
+
 import numpy as np
+
 from Agents.MarkovAgents.WeightsManager import FeatureExtractors
+from Agents.PlayerInterface import PlayerInterface
+from Agents.Rewards import total_cards_dropped_reward, TERMINAL_STATE_SCORE
+from util import flipCoin
 
 REWARD_FUNCTION = total_cards_dropped_reward
 
@@ -119,9 +121,11 @@ class ApproximateQAgent(ReinforcementAgent):
     def __init__(self, game, discount, epsilon, POMDP_flag, counter_weights=None):
         self.featExtractor = FeatureExtractors()
         ReinforcementAgent.__init__(self, game, discount, epsilon, POMDP_flag, counter_weights)
+        if counter_weights is None:
+            self.Q_values = np.full(len(self.featExtractor), 0)
 
-        # You might want to initialize weights here.
-        self.weights = np.full(len(self.featExtractor), 0)
+        # # You might want to initialize weights here.
+        # self.weights = np.full(len(self.featExtractor), 0)
 
     def getQValue(self, state, action):
         """
@@ -131,7 +135,7 @@ class ApproximateQAgent(ReinforcementAgent):
         if state is None or action is None:
             return 0
         features = self.featExtractor.get_feature_vector(state, action)
-        return np.dot(self.weights, features)
+        return np.dot(self.Q_values, features)
 
     def update(self, state, action, nextState):
         """
@@ -142,8 +146,8 @@ class ApproximateQAgent(ReinforcementAgent):
         reward = REWARD_FUNCTION(state, action, nextState)
         features = self.featExtractor.get_feature_vector(state, action)
         correction = (reward + self.discount * self.getValue(nextState)) - self.getQValue(state, action)
-        self.weights = self.weights + self.alpha*correction*features  # TODO check that this np realy updates like it should
+        self.Q_values = self.Q_values + self.alpha*correction*features  # TODO check that this np realy updates like it should
 
     def get_weights(self):
-        return self.weights
+        return self.Q_values
 

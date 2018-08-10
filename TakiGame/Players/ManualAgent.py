@@ -1,5 +1,5 @@
+from Agents.PlayerInterface import PlayerInterface
 from TakiGame.GameLogic.Action import Action
-from TakiGame.Players.PlayerInterface import PlayerInterface
 
 
 class ManualAgent(PlayerInterface):

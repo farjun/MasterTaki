@@ -39,14 +39,17 @@ def train_MDP_agent(game, number_of_training_for_session=1000):
     :return: the number of new state-action combination he saw during the session
     """
     game.players[1][PLAYER].init_repeat_counter()
+    if game.players[1][PLAYER_TYPE] == "FeatureAgent":
+        print("Weights before current training: ", game.players[1][PLAYER].get_weights())
 
     for i in range(number_of_training_for_session):
         game.run_single_game(True)
 
-    print("Number of NON repeated state-action updates: ", game.players[1][PLAYER].get_non_repeat_counter())
-    print("Number of repeated state-action updates: ", game.players[1][PLAYER].get_repeat_counter())
     if game.players[1][PLAYER_TYPE] == "FeatureAgent":
-        print("Current weights: ", game.players[1][PLAYER].get_weights())
+        print("Weights after current training: ", game.players[1][PLAYER].get_weights())
+    else:
+        print("Number of NON repeated state-action updates: ", game.players[1][PLAYER].get_non_repeat_counter())
+        print("Number of repeated state-action updates: ", game.players[1][PLAYER].get_repeat_counter())
 
 
 def save_weights_to_pickle_file(game):
@@ -157,7 +160,6 @@ def parser():
     players = parse_agent(sys.argv[1:3])
     number_of_games = parse_num_of_games(sys.argv[3])
     print_mode = False
-    levels = discount = epsilon = None
     if len(sys.argv) > 4:
         arguments = sys.argv[4:]
         levels, discount, epsilon, print_mode = parse_optional_arguments(arguments)
@@ -204,8 +206,8 @@ def load_and_train_reinforcement(approximate=False):
     if approximate:
         players = [["Ido", "H"], ["Shachar", "APPROX"]]
     else:
-        players = [["Ido", "H"], ["Shachar", "H"]]
-    number_of_games = 50
+        players = [["Ido", "H"], ["Shachar", "POMDP"]]
+    number_of_games = 100
     number_of_training = 1000
     game = GameManager(players, number_of_games, levels=2, epsilon=0.05, discount=0.1, print_mode=False, counter_weights_list=counter_weights)
 
@@ -215,6 +217,9 @@ def load_and_train_reinforcement(approximate=False):
         print("End train session")
         if i % 10 == 0:
             save_weights_to_pickle_file(game)
+            test_game = game = GameManager(players, number_of_games, levels=2, epsilon=0.05, discount=0.1, print_mode=False, counter_weights_list=load_counter_weights())
+            test_game.run_game()
+            test_game.print_scoring_table()
 
 
 def run_from_parser():

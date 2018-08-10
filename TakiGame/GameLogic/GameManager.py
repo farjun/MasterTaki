@@ -1,7 +1,7 @@
-from Agents import Heuristics
-from Agents.DeterministicAgents import StateHeuristics
+from Agents.DeterministicAgents import Heuristics
 from Agents.DeterministicAgents.ReflexAgentInterface import HeuristicReflexAgent
 from Agents.MarkovAgents.ReinforcementAgent import ReinforcementAgent, ApproximateQAgent
+from Agents.TreeBasedAgents import StateHeuristics
 from Agents.TreeBasedAgents.AlphaBetaPruningAgent import AlphaBetaPruningAgent
 from Agents.TreeBasedAgents.ExpectimaxAgent import ExpectimaxAgent
 from TakiGame.DeckStuff.TakiDeck import Deck
@@ -137,6 +137,9 @@ class GameManager:
                 return
 
     def run_game(self):
+        for player in self.players.values():
+            if player[PLAYER_TYPE] == "FeatureAgent":
+                print("Test game weights: ", player[PLAYER].get_weights())
         for i in range(self.number_of_games):
             self.run_single_game()
 
