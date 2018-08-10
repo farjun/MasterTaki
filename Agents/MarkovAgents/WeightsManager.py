@@ -23,7 +23,7 @@ class FeatureExtractors(object):
     def init_method_list(self, full_method_list):
         feature_list = []
         for name, method in full_method_list:
-            if name.startswith("feature_active"):
+            if name.startswith("feature"):
                 feature_list.append(method)
         return feature_list
 
