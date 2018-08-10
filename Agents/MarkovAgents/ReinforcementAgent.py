@@ -129,7 +129,7 @@ class ApproximateQAgent(ReinforcementAgent):
           Should return Q(state,action) = w * featureVector
           where * is the dotProduct operator
         """
-        if state is None or action is None:
+        if state is None or action is None or state.is_terminal_state():
             return 0
         features = self.featExtractor.get_feature_vector(state, action)
         return np.dot(self.Q_values, features)
@@ -138,7 +138,7 @@ class ApproximateQAgent(ReinforcementAgent):
         """
            Should update your weights based on transition
         """
-        if not action:
+        if not action or state.is_terminal_state():
             return
         reward = REWARD_FUNCTION(state, action, nextState)
         features = self.featExtractor.get_feature_vector(state, action)
@@ -148,3 +148,9 @@ class ApproximateQAgent(ReinforcementAgent):
     def get_weights(self):
         return self.Q_values
 
+    def get_weights_with_names(self):
+        weights_with_names = {}
+        features_names = self.featExtractor.get_features_names()
+        for i in range(len(self.featExtractor)):
+            weights_with_names[features_names[i]] = self.Q_values[i]
+        return weights_with_names

@@ -16,6 +16,9 @@ class TwoPlayerState(object):
     def get_other_player_info(self):
         return None
 
+    def is_terminal_state(self):
+        return len(self.cur_player_cards) == 0 or len(self.other_player_cards) == 0
+
     def __hash__(self):
         return hash((tuple(self.cur_player_cards), self.top_card, tuple(self.other_player_cards)))
 

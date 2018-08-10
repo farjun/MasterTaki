@@ -139,7 +139,7 @@ class GameManager:
     def run_game(self):
         for player in self.players.values():
             if player[PLAYER_TYPE] == "FeatureAgent":
-                print("Test game weights: ", player[PLAYER].get_weights())
+                print("Test game weights: \n", player[PLAYER].get_weights_with_names())
         for i in range(self.number_of_games):
             self.run_single_game()
 

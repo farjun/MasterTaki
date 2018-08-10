@@ -6,30 +6,26 @@ from TakiGame.GameLogic.Action import Action
 from TakiGame.GameLogic.State import TwoPlayerState
 
 
-class WeightsManager(object):
-    def __init__(self):
-        self.fe = FeatureExtractors()
-        self.weights = np.ndarray(len(self.fe))
-
-    def get_score(self, state, action):
-        return np.dot(self.weights, self.fe.get_feature_vector(state, action))
-
-
 class FeatureExtractors(object):
 
     def __init__(self):
-        self.feature_list = self.init_method_list(inspect.getmembers(self, predicate=inspect.ismethod))
+        self.feature_list, self.features_names = self.init_method_list(inspect.getmembers(self, predicate=inspect.ismethod))
 
     def init_method_list(self, full_method_list):
         feature_list = []
+        features_names = []
         for name, method in full_method_list:
             if name.startswith("feature"):
                 feature_list.append(method)
-        return feature_list
+                features_names.append(name[len("feature")+1:])
+        return feature_list, features_names
 
     def get_feature_vector(self, state, action):
         feature_vector = np.array([feature_score(state, action) for feature_score in self.feature_list], dtype=np.float64)
         return feature_vector/10.0
+
+    def get_features_names(self):
+        return self.features_names
 
     def __len__(self):
         return len(self.feature_list)
@@ -258,7 +254,7 @@ class FeatureExtractors(object):
         color = state.get_top_card().get_color()
 
         if action.action_is_draw():
-            return
+            return 0
         # Deal with the situation in which action was change_color or that action ended in a change_color card
         if action.get_cards()[-1].get_value() == SpecialNoColor.CHANGE_COLOR:
             hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
@@ -267,6 +263,7 @@ class FeatureExtractors(object):
                 return 0
             return 1
         return 0
+
 
 def delete_cards(cards_list, cards):
     c = []

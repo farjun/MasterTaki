@@ -43,13 +43,13 @@ def train_MDP_agent(game, number_of_training_for_session=1000):
     """
     game.players[1][PLAYER].init_repeat_counter()
     if game.players[1][PLAYER_TYPE] == "FeatureAgent":
-        print("Weights before current training: ", game.players[1][PLAYER].get_weights())
+        print("Weights before current training: \n", game.players[1][PLAYER].get_weights_with_names())
 
     for i in range(number_of_training_for_session):
         game.run_single_game(True)
 
     if game.players[1][PLAYER_TYPE] == "FeatureAgent":
-        print("Weights after current training: ", game.players[1][PLAYER].get_weights())
+        print("Weights after current training: \n", game.players[1][PLAYER].get_weights_with_names())
     else:
         print("Number of NON repeated state-action updates: ", game.players[1][PLAYER].get_non_repeat_counter())
         print("Number of repeated state-action updates: ", game.players[1][PLAYER].get_repeat_counter())
