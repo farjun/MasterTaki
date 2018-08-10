@@ -146,6 +146,9 @@ class FeatureExtractors(object):
             return 1
         return 0
 
+    def feature_bias(self, state: PartialStateTwoPlayer, action: Action):
+        return 1
+
 
 def delete_cards(cards_list, cards):
     c = []
