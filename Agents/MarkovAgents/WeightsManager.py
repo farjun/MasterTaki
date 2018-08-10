@@ -148,10 +148,10 @@ class FeatureExtractors(object):
 
     def feature_one_color(self, state: PartialStateTwoPlayer, action: Action):
         """Check if all of the cards are in one color"""
-        color = state.cur_player_cards[0].get_color()
+        color = state.get_cur_player_cards()[0].get_color()
         no_color_flag = False
         # Deal one hand of one card
-        if len(state.cur_player_cards) == 1:
+        if len(state.get_cur_player_cards()) == 1:
             return 1
 
         if color == Color.NO_COLOR:
@@ -239,11 +239,13 @@ class FeatureExtractors(object):
         return 0
 
     def feature_has_small_hand(self, state: PartialStateTwoPlayer, action: Action):
+        """ Check if the player hand is smaller than three"""
         if len(state.get_cur_player_cards()) < 3:
             return 1
         return 0
 
     def feature_smaller_hand_than_the_opponent(self, state: PartialStateTwoPlayer, action: Action):
+        """ Check if the player hand is smaller than his opponent"""
         if len(state.get_cur_player_cards()) < state.get_other_player_info():
             return 1
         return 0
@@ -251,6 +253,20 @@ class FeatureExtractors(object):
     def feature_bias(self, state: PartialStateTwoPlayer, action: Action):
         return 1
 
+    def feature_really_change_color(self, state: PartialStateTwoPlayer, action: Action):
+        """ Check if the change color action has really changed color """
+        color = state.get_top_card().get_color()
+
+        if action.action_is_draw():
+            return
+        # Deal with the situation in which action was change_color or that action ended in a change_color card
+        if action.get_cards()[-1].get_value() == SpecialNoColor.CHANGE_COLOR:
+            hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
+            # If the action hasn't ended the game and the use of the change_color hasn't really changed the color
+            if len(hand) > 0 and color == action.get_change_color():
+                return 0
+            return 1
+        return 0
 
 def delete_cards(cards_list, cards):
     c = []
