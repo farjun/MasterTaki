@@ -23,7 +23,7 @@ class FeatureExtractors(object):
     def init_method_list(self, full_method_list):
         feature_list = []
         for name, method in full_method_list:
-            if name.startswith("feature"):
+            if name.startswith("feature_one"):
                 feature_list.append(method)
         return feature_list
 
@@ -145,6 +145,28 @@ class FeatureExtractors(object):
         if action.action_is_king() and not state.get_top_card().is_plus_2():
             return 1
         return 0
+
+    def feature_one_color(self, state: PartialStateTwoPlayer, action: Action):
+        """Check if all of the cards are in one color"""
+        color = state.cur_player_cards[0].get_color()
+        no_color_flag = False
+        # Deal one hand of one card
+        if len(state.cur_player_cards) == 1:
+            return 1
+
+        if color == Color.NO_COLOR:
+            no_color_flag = True
+
+        hand = state.cur_player_cards[1:]
+        for card in hand:
+            # Deal with the case of the first being a NO_COLOR
+            if no_color_flag and card.get_color() != Color.NO_COLOR:
+                no_color_flag = False
+                color = card.get_color()
+            #  Check if the cards are all in one color
+            if card.get_color() != color and card.get_color() != Color.NO_COLOR:
+                return 0
+        return 1
 
 
 def delete_cards(cards_list, cards):
