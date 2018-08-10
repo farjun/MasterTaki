@@ -4,6 +4,7 @@ from TakiGame.GameLogic.State import PartialStateTwoPlayer
 from TakiGame.DeckStuff.Card import SpecialNoColor, SpecialWithColor, Color
 from TakiGame.GameLogic.Action import Action
 from TakiGame.GameLogic.State import TwoPlayerState
+from TakiGame.DeckStuff.Card import Card
 
 
 class WeightsManager(object):
@@ -141,6 +142,11 @@ class FeatureExtractors(object):
                 return 0
         return 0
 
+    def feature_active_king(self, state: PartialStateTwoPlayer, action: Action):
+        """ Check if the action is king and if the top card isn't plus 2"""
+        if action.action_is_king() and not state.get_top_card().is_plus_2():
+            return 1
+        return 0
 
 #w = WeightsManager()
 #print(w.get_score(None, None))
