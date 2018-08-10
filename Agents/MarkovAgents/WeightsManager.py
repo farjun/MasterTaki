@@ -146,6 +146,108 @@ class FeatureExtractors(object):
             return 1
         return 0
 
+    def feature_one_color(self, state: PartialStateTwoPlayer, action: Action):
+        """Check if all of the cards are in one color"""
+        color = state.cur_player_cards[0].get_color()
+        no_color_flag = False
+        # Deal one hand of one card
+        if len(state.cur_player_cards) == 1:
+            return 1
+
+        if color == Color.NO_COLOR:
+            no_color_flag = True
+
+        hand = state.cur_player_cards[1:]
+        for card in hand:
+            # Deal with the case of the first being a NO_COLOR
+            if no_color_flag and card.get_color() != Color.NO_COLOR:
+                no_color_flag = False
+                color = card.get_color()
+            #  Check if the cards are all in one color
+            if card.get_color() != color and card.get_color() != Color.NO_COLOR:
+                return 0
+        return 1
+
+    def feature_has_super_taki_in_hand(self, state: PartialStateTwoPlayer, action: Action):
+        """ Check if the hand has the card super taki in it"""
+        hand = []
+        # get the player hand
+        if action.action_is_draw():
+            hand = state.get_cur_player_cards()
+        else:
+            hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
+        # Check for super taki
+        for card in hand:
+            if card.get_value() == SpecialNoColor.SUPER_TAKI:
+                return 1
+        return 0
+
+    def feature_has_king_in_hand(self, state: PartialStateTwoPlayer, action: Action):
+        """ Check if the hand has the card king in it"""
+        hand = []
+        # get the player hand
+        if action.action_is_draw():
+            hand = state.get_cur_player_cards()
+        else:
+            hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
+        # Check for king
+        for card in hand:
+            if card.get_value() == SpecialNoColor.KING:
+                return 1
+        return 0
+
+    def feature_has_change_color_in_hand(self, state: PartialStateTwoPlayer, action: Action):
+        """ Check if the hand has the card change_color in it"""
+        hand = []
+        # get the player hand
+        if action.action_is_draw():
+            hand = state.get_cur_player_cards()
+        else:
+            hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
+        # Check for change color
+        for card in hand:
+            if card.get_value() == SpecialNoColor.CHANGE_COLOR:
+                return 1
+        return 0
+
+    def feature_has_taki_in_hand(self, state: PartialStateTwoPlayer, action: Action):
+        """ Check if the hand has the card taki in it"""
+        hand = []
+        # get the player hand
+        if action.action_is_draw():
+            hand = state.get_cur_player_cards()
+        else:
+            hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
+        # Check for taki
+        for card in hand:
+            if card.get_value() == SpecialWithColor.TAKI:
+                return 1
+        return 0
+
+    def feature_has_plus2_in_hand(self, state: PartialStateTwoPlayer, action: Action):
+        """ Check if the hand has the card plus2 in it"""
+        hand = []
+        # get the player hand
+        if action.action_is_draw():
+            hand = state.get_cur_player_cards()
+        else:
+            hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
+        # Check for plus2
+        for card in hand:
+            if card.get_value() == SpecialWithColor.PLUS_2:
+                return 1
+        return 0
+
+    def feature_has_small_hand(self, state: PartialStateTwoPlayer, action: Action):
+        if len(state.get_cur_player_cards()) < 3:
+            return 1
+        return 0
+
+    def feature_smaller_hand_than_the_opponent(self, state: PartialStateTwoPlayer, action: Action):
+        if len(state.get_cur_player_cards()) < state.get_other_player_info():
+            return 1
+        return 0
+
     def feature_bias(self, state: PartialStateTwoPlayer, action: Action):
         return 1
 

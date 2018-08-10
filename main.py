@@ -198,18 +198,19 @@ def test_alphabeta_vs_reflex(num_of_iterations):
 
 def load_counter_weights():
     counter_weights = list()
-    counter_weights.append(check_pickle_file_path(mdp_weights_path))
-    counter_weights.append(check_pickle_file_path(pomdp_weights_path))
+    #counter_weights.append(check_pickle_file_path(mdp_weights_path))
+    #counter_weights.append(check_pickle_file_path(pomdp_weights_path))
     counter_weights.append(check_pickle_file_path(approximate_weights_path))
     return counter_weights
 
 
 def load_and_train_reinforcement(approximate=False):
-    counter_weights = load_counter_weights()
+    counter_weights = [None,None,None]
+    #counter_weights = load_counter_weights()
     if approximate:
         players = [["Ido", "H"], ["Shachar", "APPROX"]]
     else:
-        players = [["Ido", "H"], ["Shachar", "POMDP"]]
+        players = [["Ido", "H"], ["Shachar", "H"]]
     number_of_games = 100
     number_of_training = 1000
     game = GameManager(players, number_of_games, levels=2, epsilon=0.05, discount=0.1, print_mode=False, counter_weights_list=counter_weights)
