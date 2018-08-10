@@ -23,7 +23,7 @@ PLAYER_NAME = 0
 
 
 class GameManager:
-    def __init__(self, playersTypes, games, levels,discount, epsilon, print_mode=False, counter_weights_list=[Counter(), Counter()]):
+    def __init__(self, playersTypes, games, levels,discount, epsilon, print_mode=False, counter_weights_list=[Counter(), Counter(), Counter()]):
         if len(playersTypes) < 2:
             raise NotEnoughPlayersException
         self.players = self.__init_players(playersTypes, counter_weights_list, levels,discount, epsilon)
