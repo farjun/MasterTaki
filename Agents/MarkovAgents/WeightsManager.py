@@ -75,8 +75,8 @@ class FeatureExtractors(object):
 
     def feature_stop_plus_another_card(self, state: PartialStateTwoPlayer, action: Action):
         # Checks if the action start with a stop and has the length of the action
-        action = action.get_cards()
-        if len(action) > 0 and action[0] == SpecialWithColor.STOP and len(action) == 2:
+        action_cards = action.get_cards()
+        if len(action_cards) > 0 and action_cards[0].get_value() == SpecialWithColor.STOP and len(action_cards) == 2:
             return 1
         return 0
 

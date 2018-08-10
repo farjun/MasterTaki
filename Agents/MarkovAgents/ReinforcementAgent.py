@@ -124,9 +124,6 @@ class ApproximateQAgent(ReinforcementAgent):
         if counter_weights is None:
             self.Q_values = np.full(len(self.featExtractor), 0)
 
-        # # You might want to initialize weights here.
-        # self.weights = np.full(len(self.featExtractor), 0)
-
     def getQValue(self, state, action):
         """
           Should return Q(state,action) = w * featureVector

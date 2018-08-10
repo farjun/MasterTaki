@@ -24,7 +24,10 @@ PRINT_MODE = "-print_mode="
 
 
 def check_pickle_file_path(path):
-    c = Counter()
+    if path == approximate_weights_path:
+        c = None
+    else:
+        c = Counter()
     if os.path.getsize(path) > 0:
         with open(path, 'rb') as outputfile:
             c = pickle.load(outputfile)
