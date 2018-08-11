@@ -65,14 +65,14 @@ class FeatureExtractors(object):
     def feature_plus_another_card(self, state:PartialStateTwoPlayer, action: Action):
         # Checks if the action start with a plus and has the length of the action
         action_cards = action.get_cards()
-        if len(action_cards) > 0 and action_cards[0].get_value() == SpecialWithColor.PLUS and len(action_cards) == 2:
+        if len(action_cards) > 0 and action_cards[0].get_value() == SpecialWithColor.PLUS and len(action_cards) >= 2:
             return 1
         return 0
 
     def feature_stop_plus_another_card(self, state: PartialStateTwoPlayer, action: Action):
         # Checks if the action start with a stop and has the length of the action
         action_cards = action.get_cards()
-        if len(action_cards) > 0 and action_cards[0].get_value() == SpecialWithColor.STOP and len(action_cards) == 2:
+        if len(action_cards) > 0 and action_cards[0].get_value() == SpecialWithColor.STOP and len(action_cards) >= 2:
             return 1
         return 0
 
@@ -87,32 +87,42 @@ class FeatureExtractors(object):
             return 0.4
         return 0
 
-    def feature_end_game_plus2(self, state: PartialStateTwoPlayer, action: Action):
+    def feature_plus2_when_opponent_close_to_win(self, state: PartialStateTwoPlayer, action: Action):
         # Check if the opponent is close to winning in and your action is plus 2
-        if state.get_other_player_info() == 1:
+        if state.get_other_player_info() < 4:
             if action.action_is_plus_2():
                 return 1
             return 0
-        return 1
+        return 0
 
     def feature_finished_color(self, state: PartialStateTwoPlayer, action: Action):
         """if all cards of state in the caller of top card are put down by the action"""
         color = state.get_top_card().get_color()
         f = False
         for card in action.get_cards():
-            if card.get_color() == color: f= True
+            if card.get_color() == color:
+                f = True
         if not f:
             return 0
         c = delete_cards(state.get_cur_player_cards(), action.get_cards())
         for card in c:
-            if card.get_color() == color: return 0
+            if card.get_color() == color:
+                return 0
         return 1
 
     def feature_have_color(self, state: PartialStateTwoPlayer, action: Action):
-        """ have a card with color of top cards"""
+        """ have a card with color of top card"""
         color = state.get_top_card().get_color()
         for card in state.get_cur_player_cards():
             if card.get_color() == color:
+                return 1
+        return 0
+
+    def feature_have_value(self, state: PartialStateTwoPlayer, action: Action):
+        """ have a card with value of top card"""
+        value = state.get_top_card().get_value()
+        for card in state.get_cur_player_cards():
+            if card.get_value() == value:
                 return 1
         return 0
 
@@ -166,7 +176,6 @@ class FeatureExtractors(object):
 
     def feature_has_super_taki_in_hand(self, state: PartialStateTwoPlayer, action: Action):
         """ Check if the hand has the card super taki in it"""
-        hand = []
         # get the player hand
         if action.action_is_draw():
             hand = state.get_cur_player_cards()
@@ -180,7 +189,6 @@ class FeatureExtractors(object):
 
     def feature_has_king_in_hand(self, state: PartialStateTwoPlayer, action: Action):
         """ Check if the hand has the card king in it"""
-        hand = []
         # get the player hand
         if action.action_is_draw():
             hand = state.get_cur_player_cards()
@@ -194,7 +202,6 @@ class FeatureExtractors(object):
 
     def feature_has_change_color_in_hand(self, state: PartialStateTwoPlayer, action: Action):
         """ Check if the hand has the card change_color in it"""
-        hand = []
         # get the player hand
         if action.action_is_draw():
             hand = state.get_cur_player_cards()
@@ -208,7 +215,6 @@ class FeatureExtractors(object):
 
     def feature_has_taki_in_hand(self, state: PartialStateTwoPlayer, action: Action):
         """ Check if the hand has the card taki in it"""
-        hand = []
         # get the player hand
         if action.action_is_draw():
             hand = state.get_cur_player_cards()
@@ -222,7 +228,6 @@ class FeatureExtractors(object):
 
     def feature_has_plus2_in_hand(self, state: PartialStateTwoPlayer, action: Action):
         """ Check if the hand has the card plus2 in it"""
-        hand = []
         # get the player hand
         if action.action_is_draw():
             hand = state.get_cur_player_cards()
