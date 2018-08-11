@@ -136,7 +136,10 @@ def parse_optional_arguments(arguments):
     :param arguments: an unknown number of parameters
     :return: levels,discount and epsilon parameters if they exists
     """
-    levels = discount = epsilon = None
+    # give them the default value
+    levels = 2
+    discount = 0.1
+    epsilon = 0.05
     print_mode = False
     for param in arguments:
         if param.startswith(LEVELS):
@@ -163,15 +166,8 @@ def parser():
         print("wrong usage of the script parameters")
     players = parse_agent(sys.argv[1:3])
     number_of_games = parse_num_of_games(sys.argv[3])
-    print_mode = False
-    if len(sys.argv) > 4:
-        arguments = sys.argv[4:]
-        levels, discount, epsilon, print_mode = parse_optional_arguments(arguments)
-    else:
-        # give them the default value
-        levels = 2
-        discount = 0.1
-        epsilon = 0.05
+    arguments = sys.argv[4:]
+    levels, discount, epsilon, print_mode = parse_optional_arguments(arguments)
 
     return players, number_of_games, levels, discount, epsilon, print_mode
 
@@ -185,7 +181,7 @@ def test_alphabeta_vs_reflex(num_of_iterations):
         game = GameManager(players, number_of_games, levels, discount, epsilon, print_mode=print_mode)
         game.run_game()  # run the test
         game.print_scoring_table()
-        winning_percentages[i-1] = game.get_player_score(0)/number_of_games  # insert alphabeta agent index
+        winning_percentages[i] = game.get_player_score(0)/number_of_games  # insert alphabeta agent index
         timed_out_counter += game.get_player(0).get_timed_out_counter()
         print("Finish iteration number %d" % (i + 1))
     print("The average alpha beta winning percentage is %6.2f" % (sum(winning_percentages) / num_of_iterations))
@@ -194,6 +190,25 @@ def test_alphabeta_vs_reflex(num_of_iterations):
     pyplot.xlabel("Iteration number")
     pyplot.ylabel("Alpha-Beta winning percentage")
     pyplot.title("Alpha Beta with depth %d vs reflex agent\n%d games in each iteration" % (levels, number_of_games))
+    pyplot.show()
+
+
+def test_reinforcement_vs_reflex(num_of_iterations):
+    counter_weights = load_counter_weights()
+    players, number_of_games, levels, discount, epsilon, print_mode = parser()
+    winning_percentages = [0] * num_of_iterations
+    for i in range(num_of_iterations):
+        print("Start iteration number %d" % (i + 1))
+        game = GameManager(players, number_of_games, levels, discount, epsilon, print_mode=print_mode, counter_weights_list=counter_weights)
+        game.run_game()  # run the test
+        game.print_scoring_table()
+        winning_percentages[i] = game.get_player_score(0) / number_of_games  # insert reinforcement agent index
+        print("Finish iteration number %d" % (i + 1))
+    print("The average reinforcement winning percentage is %6.2f" % (sum(winning_percentages) / num_of_iterations))
+    pyplot.plot(range(1, len(winning_percentages) + 1), winning_percentages)
+    pyplot.xlabel("Iteration number")
+    pyplot.ylabel("Reinforcement winning percentage")
+    pyplot.title("Feature based Q-learning vs reflex agent\n%d games in each iteration" % (number_of_games))
     pyplot.show()
 
 
@@ -238,6 +253,7 @@ if __name__ == '__main__':
     load_and_train_reinforcement(True)
     # run_from_parser()
     # test_alphabeta_vs_reflex(5)
+    # test_reinforcement_vs_reflex(10)
 
 
 

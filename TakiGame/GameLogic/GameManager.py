@@ -114,11 +114,11 @@ class GameManager:
     def run_single_turn(self, cur_action, simulate=False):
         self.save_current_state(cur_action)
         self.logic.run_single_turn(cur_action, simulate)
-        if self.is_end_game():
-            self.__end_game_update_agents()
-        else:
-            if simulate:
-                self.update_agent(self.cur_player_index)
+        if simulate:
+            if self.is_end_game():
+                self.__end_game_update_agents()
+            else:
+                    self.update_agent(self.cur_player_index)
 
     def is_end_game(self):
         return self.end_game

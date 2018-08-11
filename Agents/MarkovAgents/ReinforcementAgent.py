@@ -124,8 +124,8 @@ class ApproximateQAgent(ReinforcementAgent):
         ReinforcementAgent.__init__(self, game, discount, epsilon, POMDP_flag, counter_weights)
         if counter_weights is None:
             self.Q_values = np.full(len(self.featExtractor), 0)
-        self.t = 0
-        self.decay_alpha()
+        self.t = 1
+        self.alpha = 0
 
     def getQValue(self, state, action):
         """
@@ -146,8 +146,6 @@ class ApproximateQAgent(ReinforcementAgent):
         """
            Should update your weights based on transition
         """
-        if self.alpha < 0.01:
-            print("Number of updates before alpha too small: ", self.t)
         if not action or state.is_terminal_state():
             return
         reward = REWARD_FUNCTION(state, action, nextState)
