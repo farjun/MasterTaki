@@ -269,6 +269,17 @@ class FeatureExtractors(object):
             return 1
         return 0
 
+    def feature_use_king_when_got_no_other_choice(self, state: PartialStateTwoPlayer, action: Action):
+        """ Check if the king is used when the player can't put another card instead"""
+        active_color = state.get_top_card().get_color()
+        # Deal only action that is king and when the card on top of the pile is a color card
+        if action.action_is_king() and active_color != Color.NO_COLOR:
+            hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
+            # Check if the player has no card to put down
+            if color_counter(hand, active_color) == 0 and not find_card(hand, SpecialNoColor.CHANGE_COLOR) and \
+                not find_card(hand, SpecialNoColor.SUPER_TAKI):
+                return 1
+        return 0
 
 def delete_cards(cards_list, cards):
     c = []
@@ -277,6 +288,17 @@ def delete_cards(cards_list, cards):
             c.append(card)
     return c
 
+def find_card(hand, card_type):
+    """
+    Search the hand for the card
+    :param hand: The player current hand
+    :param card_type: The type of the card
+    :return: True if it was found else False
+    """
+    for card in hand:
+        if card.get_value() == card_type:
+            return True
+    return False
 
 def color_counter(hand, active_color):
     """
