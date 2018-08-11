@@ -117,7 +117,8 @@ class GameManager:
         if self.is_end_game():
             self.__end_game_update_agents()
         else:
-            self.update_agent(self.cur_player_index)
+            if simulate:
+                self.update_agent(self.cur_player_index)
 
     def is_end_game(self):
         return self.end_game

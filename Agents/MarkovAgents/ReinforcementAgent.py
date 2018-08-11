@@ -1,4 +1,5 @@
 import random
+import sys
 
 import numpy as np
 
@@ -123,6 +124,8 @@ class ApproximateQAgent(ReinforcementAgent):
         ReinforcementAgent.__init__(self, game, discount, epsilon, POMDP_flag, counter_weights)
         if counter_weights is None:
             self.Q_values = np.full(len(self.featExtractor), 0)
+        self.t = 0
+        self.decay_alpha()
 
     def getQValue(self, state, action):
         """
@@ -134,10 +137,17 @@ class ApproximateQAgent(ReinforcementAgent):
         features = self.featExtractor.get_feature_vector(state, action)
         return np.dot(self.Q_values, features)
 
+    def decay_alpha(self):
+        self.t += 1
+        k = 5
+        self.alpha = k/(k + self.t)
+
     def update(self, state, action, nextState):
         """
            Should update your weights based on transition
         """
+        if self.alpha < 0.01:
+            print("Number of updates before alpha too small: ", self.t)
         if not action or state.is_terminal_state():
             return
         reward = REWARD_FUNCTION(state, action, nextState)

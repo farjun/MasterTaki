@@ -34,7 +34,7 @@ def check_pickle_file_path(path):
     return c
 
 
-def train_MDP_agent(game, number_of_training_for_session=1000):
+def train_MDP_agent(game, number_of_training_for_session=100):
     """
     trains the mdp agent for one session of number_of_traning_for_session games
     :param game:
@@ -50,6 +50,7 @@ def train_MDP_agent(game, number_of_training_for_session=1000):
 
     if game.players[1][PLAYER_TYPE] == "FeatureAgent":
         print("Weights after current training: \n", game.players[1][PLAYER].get_weights_with_names())
+        game.players[1][PLAYER].decay_alpha()
     else:
         print("Number of NON repeated state-action updates: ", game.players[1][PLAYER].get_non_repeat_counter())
         print("Number of repeated state-action updates: ", game.players[1][PLAYER].get_repeat_counter())
