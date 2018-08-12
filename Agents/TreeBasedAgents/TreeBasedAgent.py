@@ -1,6 +1,7 @@
 import copy
 import random
 import signal
+import os
 from contextlib import contextmanager
 
 import numpy as np
@@ -84,19 +85,23 @@ class TreeBasedAgent(PlayerInterface):
         if len(legal_actions) == 1:
             # only possible action is draw card, so draw card
             return legal_actions[0]
-        # elif len(legal_actions) > 100:
-        #     max_action = np.argmax([len(action.cards_to_put) for action in legal_actions])
-        #     return legal_actions[max_action]
-        try:
-            with time_limit(60*2):  # limit choose action to 2 minutes each turn
-                return self.tree_recursion_on_number_of_hands(current_game)
-        except TimeoutException as e:
-            print("Timed out!")
-            self.timed_out_counter += 1
-            # pick random action with maximum length
-            action_lengths = [len(action.cards_to_put) for action in legal_actions]
-            max_action = random.choice(np.argwhere(action_lengths == np.amax(action_lengths)).flatten().tolist())
-            return legal_actions[max_action]
+        if os.name == 'nt':
+            if len(legal_actions) > 100:
+                action_lengths = [len(action.cards_to_put) for action in legal_actions]
+                max_action = random.choice(np.argwhere(action_lengths == np.amax(action_lengths)).flatten().tolist())
+                return legal_actions[max_action]
+            return self.tree_recursion_on_number_of_hands(current_game)
+        if os.name == 'posix':
+            try:
+                with time_limit(60*2):  # limit choose action to 2 minutes each turn
+                    return self.tree_recursion_on_number_of_hands(current_game)
+            except TimeoutException as e:
+                print("Timed out!")
+                self.timed_out_counter += 1
+                # pick random action with maximum length
+                action_lengths = [len(action.cards_to_put) for action in legal_actions]
+                max_action = random.choice(np.argwhere(action_lengths == np.amax(action_lengths)).flatten().tolist())
+                return legal_actions[max_action]
 
     def get_timed_out_counter(self):
         return self.timed_out_counter

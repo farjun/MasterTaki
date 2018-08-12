@@ -176,31 +176,11 @@ def parser():
     return players, number_of_games, levels, discount, epsilon, print_mode
 
 
-def test_alphabeta_vs_reflex(num_of_iterations):
-    players, number_of_games, levels, discount, epsilon, print_mode = parser()
-    winning_percentages = [0]*num_of_iterations
-    timed_out_counter = 0
-    for i in range(num_of_iterations):
-        print("Start iteration number %d" % (i+1))
-        game = GameManager(players, number_of_games, levels, discount, epsilon, print_mode=print_mode)
-        game.run_game()  # run the test
-        game.print_scoring_table()
-        winning_percentages[i] = game.get_player_score(0)/number_of_games  # insert alphabeta agent index
-        timed_out_counter += game.get_player(0).get_timed_out_counter()
-        print("Finish iteration number %d" % (i + 1))
-    print("The average alpha beta winning percentage is %6.2f" % (sum(winning_percentages) / num_of_iterations))
-    print("The average number of timed out actions each game is %6.2f" % (timed_out_counter/(number_of_games*num_of_iterations)))
-    pyplot.plot(range(1, len(winning_percentages)+1), winning_percentages)
-    pyplot.xlabel("Iteration number")
-    pyplot.ylabel("Alpha-Beta winning percentage")
-    pyplot.title("Alpha Beta with depth %d vs reflex agent\n%d games in each iteration" % (levels, number_of_games))
-    pyplot.show()
-
-
-def test_reinforcement_vs_reflex(num_of_iterations):
+def test_and_plot(num_of_iterations):
     counter_weights = load_counter_weights()
     players, number_of_games, levels, discount, epsilon, print_mode = parser()
     winning_percentages = [0] * num_of_iterations
+    game = None
     for i in range(num_of_iterations):
         print("Start iteration number %d" % (i + 1))
         game = GameManager(players, number_of_games, levels, discount, epsilon, print_mode=print_mode, counter_weights_list=counter_weights)
@@ -208,11 +188,16 @@ def test_reinforcement_vs_reflex(num_of_iterations):
         game.print_scoring_table()
         winning_percentages[i] = game.get_player_score(0) / number_of_games  # insert reinforcement agent index
         print("Finish iteration number %d" % (i + 1))
-    print("The average reinforcement winning percentage is %6.2f" % (sum(winning_percentages) / num_of_iterations))
+    player_1_type = game.get_player_type(0)
+    player_2_type = game.get_player_type(1)
+    print("The average %s winning percentage is %6.2f" % (player_1_type, sum(winning_percentages) / num_of_iterations))
     pyplot.plot(range(1, len(winning_percentages) + 1), winning_percentages)
     pyplot.xlabel("Iteration number")
-    pyplot.ylabel("Reinforcement winning percentage")
-    pyplot.title("Feature based Q-learning vs reflex agent\n%d games in each iteration" % (number_of_games))
+    pyplot.ylabel("%s winning percentage" % player_1_type)
+    title = "%s vs %s\n%d games in each iteration" % (player_1_type, player_2_type,number_of_games)
+    if player_1_type == "AlphaBetaPruning" or player_2_type == "AlphaBetaPruning":
+        title += "\nAlpha Beta with depth " + str(levels)
+    pyplot.title(title)
     pyplot.show()
 
 
@@ -254,10 +239,9 @@ def run_from_parser():
 
 
 if __name__ == '__main__':
-    load_and_train_reinforcement(True)
+    # load_and_train_reinforcement(True)
     # run_from_parser()
-    # test_alphabeta_vs_reflex(5)
-    # test_reinforcement_vs_reflex(10)
+    test_and_plot(10)
 
 
 

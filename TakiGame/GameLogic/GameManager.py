@@ -161,6 +161,9 @@ class GameManager:
     def get_player(self, player_index):
         return self.players[player_index][PLAYER]
 
+    def get_player_type(self, player_index):
+        return self.players[player_index][PLAYER_TYPE]
+
     def _top_card(self):
         return self.pile[-1]
 
