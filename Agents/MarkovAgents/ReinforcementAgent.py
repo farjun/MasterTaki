@@ -119,13 +119,14 @@ class ApproximateQAgent(ReinforcementAgent):
        should work as is.
     """
 
-    def __init__(self, game, discount, epsilon, POMDP_flag, counter_weights=None):
+    def __init__(self, game, discount, epsilon, POMDP_flag, t=1, counter_weights=None):
         self.featExtractor = FeatureExtractors()
         ReinforcementAgent.__init__(self, game, discount, epsilon, POMDP_flag, counter_weights)
         if counter_weights is None:
             self.Q_values = np.full(len(self.featExtractor), 0)
-        self.t = 1
-        self.alpha = 0
+        self.t = t
+        k = 5
+        self.alpha = k/(k + self.t)
 
     def getQValue(self, state, action):
         """

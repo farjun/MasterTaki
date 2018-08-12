@@ -30,7 +30,9 @@ def check_pickle_file_path(path):
         c = Counter()
     if os.path.getsize(path) > 0:
         with open(path, 'rb') as outputfile:
-            c = pickle.load(outputfile)
+            if path == approximate_weights_path:
+                c = [pickle.load(outputfile), pickle.load(outputfile)]
+
     return c
 
 
@@ -71,8 +73,10 @@ def save_weights_to_pickle_file(game):
 
         if player[PLAYER_TYPE] == "FeatureAgent":
             counter_to_save = player[PLAYER].Q_values
+            iteration_number = player[PLAYER].t
             with open(approximate_weights_path, 'wb') as outputfile:
                 pickle.dump(counter_to_save, outputfile)
+                pickle.dump(iteration_number, outputfile)
     print("end save pickles")
 
 
