@@ -240,8 +240,8 @@ def run_from_parser():
 
 if __name__ == '__main__':
     # load_and_train_reinforcement(True)
-    # run_from_parser()
-    test_and_plot(10)
+    run_from_parser()
+    # test_and_plot(10)
 
 
 

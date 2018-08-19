@@ -1,15 +1,17 @@
 import numpy as np
 import inspect
 from TakiGame.GameLogic.State import PartialStateTwoPlayer
-from TakiGame.DeckStuff.Card import SpecialNoColor, SpecialWithColor, Color
+from TakiGame.DeckStuff.Card import SpecialNoColor, SpecialWithColor, Color, Card
 from TakiGame.GameLogic.Action import Action
 from TakiGame.GameLogic.State import TwoPlayerState
+from util import Counter
 
 
 class FeatureExtractors(object):
 
     def __init__(self):
         self.feature_list, self.features_names = self.init_method_list(inspect.getmembers(self, predicate=inspect.ismethod))
+        self.color_counter = Counter()
 
     def init_method_list(self, full_method_list):
         feature_list = []
@@ -17,10 +19,15 @@ class FeatureExtractors(object):
         for name, method in full_method_list:
             if name.startswith("feature"):
                 feature_list.append(method)
-                features_names.append(name[len("feature")+1:])
+                features_names.append(name[len("feature") + 1:])
         return feature_list, features_names
 
+    # def init_extra_variables(self, state, action):
+    #     self.color_counter = Counter(
+    #         x.get_color() for x in state.get_cur_player_cards() if x.get_color() != Color.NO_COLOR)
+
     def get_feature_vector(self, state, action):
+        # self.init_extra_variables(state,action)
         feature_vector = np.array([feature_score(state, action) for feature_score in self.feature_list], dtype=np.float64)
         return feature_vector/10.0
 
@@ -30,29 +37,29 @@ class FeatureExtractors(object):
     def __len__(self):
         return len(self.feature_list)
 
-    def feature_is_change_color_exists(self, state:PartialStateTwoPlayer, action:Action):
-        return 1 if action.action_is_change_color() else 0
+    # def feature_is_change_color_exists(self, state:PartialStateTwoPlayer, action:Action):
+    #     return 1 if action.action_is_change_color() else 0
 
-    def feature_start_with_super_taki(self, state:PartialStateTwoPlayer, action:Action):
-        return 1 if action.begin_with_super_taki() else 0
+    # def feature_start_with_super_taki(self, state:PartialStateTwoPlayer, action:Action):
+    #     return 1 if action.begin_with_super_taki() else 0
+    #
+    # def feature_is_draw_cards(self, state:PartialStateTwoPlayer, action:Action):
+    #     return 1 if action.action_is_draw() else 0
 
-    def feature_is_draw_cards(self, state:PartialStateTwoPlayer, action:Action):
-        return 1 if action.action_is_draw() else 0
+    # def feature_is_change_direction_exists(self, state:PartialStateTwoPlayer, action:Action):
+    #     return 1 if action.action_is_change_direction() else 0
 
-    def feature_is_change_direction_exists(self, state:PartialStateTwoPlayer, action:Action):
-        return 1 if action.action_is_change_direction() else 0
+    # def feature_is_king_exists(self, state:PartialStateTwoPlayer, action:Action):
+    #     return 1 if action.action_is_king() else 0
 
-    def feature_is_king_exists(self, state:PartialStateTwoPlayer, action:Action):
-        return 1 if action.action_is_king() else 0
+    # def feature_is_plus_exists(self, state:PartialStateTwoPlayer, action:Action):
+    #     return 1 if action.action_is_plus() else 0
 
-    def feature_is_plus_exists(self, state:PartialStateTwoPlayer, action:Action):
-        return 1 if action.action_is_plus() else 0
-
-    def feature_is_plus2_exists(self, state:PartialStateTwoPlayer, action:Action):
-        return 1 if action.action_is_plus_2() else 0
-
-    def feature_is_stop_exists(self,  state:PartialStateTwoPlayer, action:Action):
-        return 1 if action.action_is_stop() else 0
+    # def feature_is_plus2_exists(self, state:PartialStateTwoPlayer, action:Action):
+    #     return 1 if action.action_is_plus_2() else 0
+    #
+    # def feature_is_stop_exists(self,  state:PartialStateTwoPlayer, action:Action):
+    #     return 1 if action.action_is_stop() else 0
 
     def feature_plus_at_the_end(self, state:PartialStateTwoPlayer, action:Action):
         # Checks if the last remaining card is a plus
@@ -174,70 +181,70 @@ class FeatureExtractors(object):
                 return 0
         return 1
 
-    def feature_has_super_taki_in_hand(self, state: PartialStateTwoPlayer, action: Action):
-        """ Check if the hand has the card super taki in it"""
-        # get the player hand
-        if action.action_is_draw():
-            hand = state.get_cur_player_cards()
-        else:
-            hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
+    # def feature_has_super_taki_in_hand(self, state: PartialStateTwoPlayer, action: Action):
+    #     """ Check if the hand has the card super taki in it"""
+    #     get the player hand
+        # if action.action_is_draw():
+        #     hand = state.get_cur_player_cards()
+        # else:
+        #     hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
         # Check for super taki
-        for card in hand:
-            if card.get_value() == SpecialNoColor.SUPER_TAKI:
-                return 1
-        return 0
+        # for card in hand:
+        #     if card.get_value() == SpecialNoColor.SUPER_TAKI:
+        #         return 1
+        # return 0
 
-    def feature_has_king_in_hand(self, state: PartialStateTwoPlayer, action: Action):
-        """ Check if the hand has the card king in it"""
-        # get the player hand
-        if action.action_is_draw():
-            hand = state.get_cur_player_cards()
-        else:
-            hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
+    # def feature_has_king_in_hand(self, state: PartialStateTwoPlayer, action: Action):
+    #     """ Check if the hand has the card king in it"""
+    #     get the player hand
+        # if action.action_is_draw():
+        #     hand = state.get_cur_player_cards()
+        # else:
+        #     hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
         # Check for king
-        for card in hand:
-            if card.get_value() == SpecialNoColor.KING:
-                return 1
-        return 0
+        # for card in hand:
+        #     if card.get_value() == SpecialNoColor.KING:
+        #         return 1
+        # return 0
 
-    def feature_has_change_color_in_hand(self, state: PartialStateTwoPlayer, action: Action):
-        """ Check if the hand has the card change_color in it"""
+    # def feature_has_change_color_in_hand(self, state: PartialStateTwoPlayer, action: Action):
+    #     """ Check if the hand has the card change_color in it"""
         # get the player hand
-        if action.action_is_draw():
-            hand = state.get_cur_player_cards()
-        else:
-            hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
+        # if action.action_is_draw():
+        #     hand = state.get_cur_player_cards()
+        # else:
+        #     hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
         # Check for change color
-        for card in hand:
-            if card.get_value() == SpecialNoColor.CHANGE_COLOR:
-                return 1
-        return 0
+        # for card in hand:
+        #     if card.get_value() == SpecialNoColor.CHANGE_COLOR:
+        #         return 1
+        # return 0
 
-    def feature_has_taki_in_hand(self, state: PartialStateTwoPlayer, action: Action):
-        """ Check if the hand has the card taki in it"""
+    # def feature_has_taki_in_hand(self, state: PartialStateTwoPlayer, action: Action):
+    #     """ Check if the hand has the card taki in it"""
         # get the player hand
-        if action.action_is_draw():
-            hand = state.get_cur_player_cards()
-        else:
-            hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
+        # if action.action_is_draw():
+        #     hand = state.get_cur_player_cards()
+        # else:
+        #     hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
         # Check for taki
-        for card in hand:
-            if card.get_value() == SpecialWithColor.TAKI:
-                return 1
-        return 0
+        # for card in hand:
+        #     if card.get_value() == SpecialWithColor.TAKI:
+        #         return 1
+        # return 0
 
-    def feature_has_plus2_in_hand(self, state: PartialStateTwoPlayer, action: Action):
-        """ Check if the hand has the card plus2 in it"""
+    # def feature_has_plus2_in_hand(self, state: PartialStateTwoPlayer, action: Action):
+    #     """ Check if the hand has the card plus2 in it"""
         # get the player hand
-        if action.action_is_draw():
-            hand = state.get_cur_player_cards()
-        else:
-            hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
+        # if action.action_is_draw():
+        #     hand = state.get_cur_player_cards()
+        # else:
+        #     hand = delete_cards(state.get_cur_player_cards(), action.get_cards())
         # Check for plus2
-        for card in hand:
-            if card.get_value() == SpecialWithColor.PLUS_2:
-                return 1
-        return 0
+        # for card in hand:
+        #     if card.get_value() == SpecialWithColor.PLUS_2:
+        #         return 1
+        # return 0
 
     def feature_has_small_hand(self, state: PartialStateTwoPlayer, action: Action):
         """ Check if the player hand is smaller than three"""
@@ -245,11 +252,11 @@ class FeatureExtractors(object):
             return 1
         return 0
 
-    def feature_smaller_hand_than_the_opponent(self, state: PartialStateTwoPlayer, action: Action):
-        """ Check if the player hand is smaller than his opponent"""
-        if len(state.get_cur_player_cards()) < state.get_other_player_info():
-            return 1
-        return 0
+    # def feature_smaller_hand_than_the_opponent(self, state: PartialStateTwoPlayer, action: Action):
+    #     """ Check if the player hand is smaller than his opponent"""
+        # if len(state.get_cur_player_cards()) < state.get_other_player_info():
+        #     return 1
+        # return 0
 
     def feature_bias(self, state: PartialStateTwoPlayer, action: Action):
         return 1
@@ -280,6 +287,47 @@ class FeatureExtractors(object):
                 not find_card(hand, SpecialNoColor.SUPER_TAKI):
                 return 1
         return 0
+
+    def feature_color_huristic(self, state: PartialStateTwoPlayer, action: Action):
+        "uses color huristic that Niv rote"
+        return featechr_color_hellper(state, action) / 10
+
+    def feature_num_cards(self, state: PartialStateTwoPlayer, action: Action):
+        return float(len(state.get_cur_player_cards()) - len(action.cards_to_put)) / 100
+
+    def feature_this_action_wins(self, state: PartialStateTwoPlayer, action: Action):
+        return len(action.cards_to_put) == len(state.get_cur_player_cards())
+
+    def feature_last_card_duplict(self, state: PartialStateTwoPlayer, action: Action):
+        if action.action_is_draw():
+            return 0
+        cards = state.get_cur_player_cards()
+        cards_left = delete_cards(cards, action.cards_to_put)
+        top_card = action.get_top_card()
+        for card1 in cards:
+            if card1.get_value() == top_card.get_value() and card1.get_color() != top_card.get_color():
+                if color_counter(cards_left, top_card.get_color()) == 0:
+                    return 1
+                else:
+                    return -1
+        return 0
+
+    # def feature_chooses_best_color(self, state: PartialStateTwoPlayer, action: Action):
+    #     if action.action_is_change_color() or Card(SpecialNoColor.SUPER_TAKI, Color.NO_COLOR) in action.cards_to_put:
+    #         cards = state.get_cur_player_cards()
+    #         color_counter = {key: 0 for key in [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]}
+    #         for card in cards:
+    #              color_counter[card.get_color()]+=1
+    #         max_colors = [k for k, v in color_counter.items() if v == max(color_counter.values())]
+    #         if(action.get_change_color() in max_colors)
+    #             return 1
+    #     return 0
+
+
+
+
+
+
 
 def delete_cards(cards_list, cards):
     c = []
@@ -312,3 +360,30 @@ def color_counter(hand, active_color):
         if card.get_color() == active_color:
             counter += 1
     return counter
+
+def featechr_color_hellper( state: PartialStateTwoPlayer, action: Action):
+    cards = state.get_cur_player_cards()
+    if action.action_is_draw():
+        return 0
+    first_card_color = action.get_cards()[0].color
+    last_card_color = action.get_cards()[-1].color
+
+    # If the active color is no-color then the agent wouldn't mind changing the color
+    if state.get_top_card().get_color() == Color.NO_COLOR:
+        return len(action.get_cards())
+    # If the action starts with super taki and ends with the active color
+    if action.begin_with_super_taki() and state.get_top_card().get_color() == last_card_color:
+        return len(action.get_cards())
+    # Count the number of cards that are in the same color as the active color
+    counter = 0
+    for card in cards:
+        if card.color == state.get_top_card().get_color():
+            counter += 1
+
+    # return the number of cards that the action encapsulate if the color is the same as the active color
+    if counter >= 1:
+        if state.get_top_card().get_color() == first_card_color:
+            return len(action.get_cards())
+        return 0
+    else:  # else the agent doesn't mind
+        return len(action.get_cards())  # todo maybe just 1

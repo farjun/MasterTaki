@@ -142,6 +142,7 @@ class ApproximateQAgent(ReinforcementAgent):
         self.t += 1
         k = 5
         self.alpha = k/(k + self.t)
+        print("alpha is: "+ str(self.alpha))
 
     def update(self, state, action, nextState):
         """
