@@ -30,3 +30,11 @@ def color_heuristic(action, game, cards):
         return 0
     else:  # else the agent doesn't mind
         return len(action.get_cards())  # todo maybe just 1
+
+
+def action_len(action, game, cards):
+    return len(action.cards_to_put)
+
+
+def null_h(action, game, cards):
+    return 0

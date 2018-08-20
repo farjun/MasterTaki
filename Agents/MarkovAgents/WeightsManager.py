@@ -312,17 +312,17 @@ class FeatureExtractors(object):
                     return -1
         return 0
 
-    def feature_chooses_best_color(self, state: PartialStateTwoPlayer, action: Action):
-        if action.action_is_change_color() or Card(SpecialNoColor.SUPER_TAKI, Color.NO_COLOR) in action.cards_to_put:
-            cards = state.get_cur_player_cards()
-            color_counter = {key: 0 for key in [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]}
-            for card in cards:
-                if card.get_color() !=Color.NO_COLOR:
-                    color_counter[card.get_color()]+=1
-            max_colors = [k for k, v in color_counter.items() if v == max(color_counter.values())]
-            if action.get_change_color() in max_colors:
-                return 1
-        return 0
+    # def feature_chooses_best_color(self, state: PartialStateTwoPlayer, action: Action):
+    #     if action.action_is_change_color() or Card(SpecialNoColor.SUPER_TAKI, Color.NO_COLOR) in action.cards_to_put:
+    #         cards = state.get_cur_player_cards()
+    #         color_counter = {key: 0 for key in [Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW]}
+    #         for card in cards:
+    #             if card.get_color() !=Color.NO_COLOR:
+    #                 color_counter[card.get_color()]+=1
+    #         max_colors = [k for k, v in color_counter.items() if v == max(color_counter.values())]
+    #         if action.get_change_color() in max_colors:
+    #             return 1
+    #     return 0
 
 
 

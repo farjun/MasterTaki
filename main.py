@@ -189,8 +189,8 @@ def load_and_train_reinforcement():
     counter_weights = load_counter_weights()
     players = [["Ido", "H"], ["Shachar", "APPROX"]]
     number_of_games = 100
-    number_of_training = 1000
-    number_of_iterations_before_testing = 5
+    number_of_training = 500
+    number_of_iterations_before_testing = 3
     winning_percentages = []
     game = GameManager(players, number_of_games, levels=2, epsilon=0.05, discount=0.1, print_mode=False, counter_weights_list=counter_weights)
 
@@ -200,8 +200,8 @@ def load_and_train_reinforcement():
         train_MDP_agent(game, number_of_training)
         current_weights = game.get_player(1).get_weights()
         print("End train session")
+        save_weights_to_pickle_file(game)
         if i % number_of_iterations_before_testing == 0:
-            save_weights_to_pickle_file(game)
             test_game = game = GameManager(players, number_of_games, levels=2, epsilon=0.05, discount=0.1, print_mode=False, counter_weights_list=load_counter_weights())
             test_game.run_game()
             test_game.print_scoring_table()
@@ -227,8 +227,8 @@ def run_from_parser():
 
 if __name__ == '__main__':
     # load_and_train_reinforcement()
-    run_from_parser()
-    # test_and_plot(10)
+    # run_from_parser()
+    test_and_plot(10)
 
 
 
