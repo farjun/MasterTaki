@@ -53,16 +53,6 @@ def train_MDP_agent(game, number_of_training_for_session=100):
 def save_weights_to_pickle_file(game):
     print("start save pickles")
     for player in game.players.values():
-        if player[PLAYER_TYPE] == "POMDPAgent":
-            counter_to_save = player[PLAYER].Q_values
-            with open(pomdp_weights_path, 'wb') as outputfile:
-                pickle.dump(counter_to_save, outputfile)
-
-        if player[PLAYER_TYPE] == "MDPAgent":
-            counter_to_save = player[PLAYER].Q_values
-            with open(mdp_weights_path, 'wb') as outputfile:
-                pickle.dump(counter_to_save, outputfile)
-
         if player[PLAYER_TYPE] == "FeatureAgent":
             counter_to_save = player[PLAYER].Q_values
             iteration_number = player[PLAYER].t
@@ -200,7 +190,7 @@ def load_and_train_reinforcement():
     players = [["Ido", "H"], ["Shachar", "APPROX"]]
     number_of_games = 100
     number_of_training = 1000
-    number_of_iterations_before_testing = 10
+    number_of_iterations_before_testing = 5
     winning_percentages = []
     game = GameManager(players, number_of_games, levels=2, epsilon=0.05, discount=0.1, print_mode=False, counter_weights_list=counter_weights)
 
@@ -216,7 +206,7 @@ def load_and_train_reinforcement():
             test_game.run_game()
             test_game.print_scoring_table()
             winning_percentages.append(test_game.get_player_score(1) / number_of_games)  # insert reinforcement agent index
-        if np.linalg.norm(current_weights - previous_weights) < 1:
+        if np.linalg.norm(current_weights - previous_weights) < 5:
             print("Weights converged after %d training iterations" % i)
             break
     number_of_training_games_played = [i*number_of_iterations_before_testing*number_of_training for i in range(1, len(winning_percentages)+1)]
