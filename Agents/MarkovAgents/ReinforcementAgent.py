@@ -139,10 +139,10 @@ class ApproximateQAgent(ReinforcementAgent):
         return np.dot(self.Q_values, features)
 
     def decay_alpha(self):
-        self.t += 1
         k = 5
         self.alpha = k/(k + self.t)
-        print("alpha is: "+ str(self.alpha))
+        self.t += 1
+        print("alpha is: " + str(self.alpha))
 
     def update(self, state, action, nextState):
         """

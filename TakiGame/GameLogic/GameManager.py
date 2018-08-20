@@ -23,7 +23,7 @@ PLAYER_NAME = 0
 
 
 class GameManager:
-    def __init__(self, playersTypes, games, levels,discount, epsilon, print_mode=False, counter_weights_list=[Counter(), Counter(), Counter()]):
+    def __init__(self, playersTypes, games, levels,discount, epsilon, print_mode=False, counter_weights_list=[None]):
         if len(playersTypes) < 2:
             raise NotEnoughPlayersException
         self.players = self.__init_players(playersTypes, counter_weights_list, levels,discount, epsilon)
@@ -43,16 +43,12 @@ class GameManager:
                 players[id] = [AlphaBetaPruningAgent(self, [StateHeuristics.weight_heuristic], levels), "AlphaBetaPruning", 0]
             if player_details[1] == "E":
                 players[id] = [ExpectimaxAgent(self, [StateHeuristics.weight_heuristic], levels), "Expectimax", 0]
-            if player_details[1] == "MDP":
-                players[id] = [ReinforcementAgent(self, discount, epsilon, POMDP_flag=False, counter_weights=counter_weights_list[0]), "MDPAgent", 0]
-            if player_details[1] == "POMDP":
-                players[id] = [ReinforcementAgent(self, discount, epsilon, POMDP_flag=True, counter_weights=counter_weights_list[1]), "POMDPAgent", 0]
             if player_details[1] == "APPROX":
                 counter_weights = None
                 iteration_number = 1
-                if counter_weights_list[2] is not None:
-                    counter_weights = counter_weights_list[2][0]
-                    iteration_number = counter_weights_list[2][1]
+                if counter_weights_list[0] is not None:
+                    counter_weights = counter_weights_list[0][0]
+                    iteration_number = counter_weights_list[0][1]
                 players[id] = [ApproximateQAgent(self, discount, epsilon, POMDP_flag=True, t=iteration_number, counter_weights=counter_weights), "FeatureAgent", 0]
         return players
 
@@ -194,7 +190,4 @@ class GameManager:
     def get_state(self):
         current_player_hand = self.get_current_player_hand().copy()
         opp_player_hand = self.players[(self.cur_player_index + 1 * self.progress_direction) % len(self.players)][PLAYER].get_cards().copy()
-        if self.players[self.cur_player_index][PLAYER_TYPE] != "MDP":
-            return PartialStateTwoPlayer(current_player_hand, self.get_top_card(), opp_player_hand, self.cur_player_index)
-        else:
-            return FullStateTwoPlayer(current_player_hand, self.get_top_card(), opp_player_hand, self.cur_player_index)
+        return PartialStateTwoPlayer(current_player_hand, self.get_top_card(), opp_player_hand, self.cur_player_index)
