@@ -5,16 +5,13 @@ import os
 from collections import Counter
 import sys
 from matplotlib import pyplot
+import numpy as np
 
-mdp_weights_path = './weights/MDP_weights.pickle'
-pomdp_weights_path = './weights/POMDP_weights.pickle'
 approximate_weights_path = './weights/APPROXIMATE_weights.pickle'
 
 HEURISTIC = "-heuristic"
 ALPHA_BETA = "-alpha"
 EXPECTIMAX = "-expectimax"
-MDP = "-mdp"
-POMDP = "-pomdp"
 MANUAL = "-manual"
 APPROX = "-approximate"
 DISCOUNT = "-discount="
@@ -44,33 +41,18 @@ def train_MDP_agent(game, number_of_training_for_session=100):
     :return: the number of new state-action combination he saw during the session
     """
     game.players[1][PLAYER].init_repeat_counter()
-    if game.players[1][PLAYER_TYPE] == "FeatureAgent":
-        print("Weights before current training: \n", game.players[1][PLAYER].get_weights_with_names())
+    print("Weights before current training: \n", game.players[1][PLAYER].get_weights_with_names())
 
     for i in range(number_of_training_for_session):
         game.run_single_game(True)
 
-    if game.players[1][PLAYER_TYPE] == "FeatureAgent":
-        print("Weights after current training: \n", game.players[1][PLAYER].get_weights_with_names())
-        game.players[1][PLAYER].decay_alpha()
-    else:
-        print("Number of NON repeated state-action updates: ", game.players[1][PLAYER].get_non_repeat_counter())
-        print("Number of repeated state-action updates: ", game.players[1][PLAYER].get_repeat_counter())
+    print("Weights after current training: \n", game.players[1][PLAYER].get_weights_with_names())
+    game.players[1][PLAYER].decay_alpha()
 
 
 def save_weights_to_pickle_file(game):
     print("start save pickles")
     for player in game.players.values():
-        if player[PLAYER_TYPE] == "POMDPAgent":
-            counter_to_save = player[PLAYER].Q_values
-            with open(pomdp_weights_path, 'wb') as outputfile:
-                pickle.dump(counter_to_save, outputfile)
-
-        if player[PLAYER_TYPE] == "MDPAgent":
-            counter_to_save = player[PLAYER].Q_values
-            with open(mdp_weights_path, 'wb') as outputfile:
-                pickle.dump(counter_to_save, outputfile)
-
         if player[PLAYER_TYPE] == "FeatureAgent":
             counter_to_save = player[PLAYER].Q_values
             iteration_number = player[PLAYER].t
@@ -94,10 +76,6 @@ def parse_agent(agents_type):
             agents.append(["player_{}".format(i), "A"])
         elif agents_type[i] == EXPECTIMAX:
             agents.append(["player_{}".format(i), "E"])
-        elif agents_type[i] == MDP:
-            agents.append(["player_{}".format(i), "MDP"])
-        elif agents_type[i] == POMDP:
-            agents.append(["player_{}".format(i), "POMDP"])
         elif agents_type[i] == MANUAL:
             agents.append(["player_{}".format(i), "M"])
         elif agents_type[i] == APPROX:
@@ -203,31 +181,40 @@ def test_and_plot(num_of_iterations):
 
 def load_counter_weights():
     counter_weights = list()
-    counter_weights.append(check_pickle_file_path(mdp_weights_path))
-    counter_weights.append(check_pickle_file_path(pomdp_weights_path))
     counter_weights.append(check_pickle_file_path(approximate_weights_path))
     return counter_weights
 
 
-def load_and_train_reinforcement(approximate=False):
+def load_and_train_reinforcement():
     counter_weights = load_counter_weights()
-    if approximate:
-        players = [["Ido", "H"], ["Shachar", "APPROX"]]
-    else:
-        players = [["Ido", "H"], ["Shachar", "H"]]
+    players = [["Ido", "H"], ["Shachar", "APPROX"]]
     number_of_games = 100
     number_of_training = 1000
+    number_of_iterations_before_testing = 5
+    winning_percentages = []
     game = GameManager(players, number_of_games, levels=2, epsilon=0.05, discount=0.1, print_mode=False, counter_weights_list=counter_weights)
 
-    for i in range(1, 1001):
+    for i in range(1, 10001):
         print("Start train session")
+        previous_weights = game.get_player(1).get_weights()
         train_MDP_agent(game, number_of_training)
+        current_weights = game.get_player(1).get_weights()
         print("End train session")
-        if i % 10 == 0:
+        if i % number_of_iterations_before_testing == 0:
             save_weights_to_pickle_file(game)
             test_game = game = GameManager(players, number_of_games, levels=2, epsilon=0.05, discount=0.1, print_mode=False, counter_weights_list=load_counter_weights())
             test_game.run_game()
             test_game.print_scoring_table()
+            winning_percentages.append(test_game.get_player_score(1) / number_of_games)  # insert reinforcement agent index
+        if np.linalg.norm(current_weights - previous_weights) < 5:
+            print("Weights converged after %d training iterations" % i)
+            break
+    number_of_training_games_played = [i*number_of_iterations_before_testing*number_of_training for i in range(1, len(winning_percentages)+1)]
+    pyplot.plot(number_of_training_games_played, winning_percentages)
+    pyplot.xlabel("Number of training games played")
+    pyplot.ylabel("Reinforcement winning percentage")
+    pyplot.title("Feature agent winning percentage against Heuristic agent\nAs function of number of training games")
+    pyplot.show()
 
 
 def run_from_parser():
@@ -239,8 +226,8 @@ def run_from_parser():
 
 
 if __name__ == '__main__':
-    # load_and_train_reinforcement(True)
-    run_from_parser()
+    load_and_train_reinforcement()
+    # run_from_parser()
     # test_and_plot(10)
 
 
