@@ -249,7 +249,7 @@ class LogicExecutor:
 
     def run_single_turn(self, cur_action, simoulate=False):
         if not simoulate and self.game.print_mode:
-            print(cur_action)
+            print("Chosen action:\n", cur_action)
         self.__execute_action(cur_action)
         if self.game.get_current_player().player_is_done() and not self.game.get_top_card().is_plus():
             self.__update_winner(simoulate)

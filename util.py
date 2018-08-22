@@ -20,7 +20,6 @@ MANUAL = "-manual"
 APPROX = "-approximate"
 EPSILON = "-epsilon="
 LEVELS = "-levels="
-HEURISTIC_TYPE = "-H_Type="
 PRINT_MODE = "-print_mode="
 
 
