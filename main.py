@@ -54,7 +54,7 @@ def train_MDP_agent(game, number_of_training_for_session=100):
 
 
 def test_and_plot(num_of_iterations):
-    counter_weights = load_counter_weights()
+    counter_weights = check_pickle_file_path(approximate_weights_path)
     players, number_of_games, levels, discount, epsilon, print_mode = parser(sys.argv)
     winning_percentages = [0] * num_of_iterations
     game = None
@@ -71,21 +71,15 @@ def test_and_plot(num_of_iterations):
     pyplot.plot(range(1, len(winning_percentages) + 1), winning_percentages)
     pyplot.xlabel("Iteration number")
     pyplot.ylabel("%s winning percentage" % player_1_type)
-    title = "%s vs %s\n%d games in each iteration" % (player_1_type, player_2_type,number_of_games)
+    title = "%s vs %s\n%d games in each iteration" % (player_1_type, player_2_type, number_of_games)
     if player_1_type == "AlphaBetaPruning" or player_2_type == "AlphaBetaPruning":
         title += "\nAlpha Beta with depth " + str(levels)
     pyplot.title(title)
     pyplot.show()
 
 
-def load_counter_weights():
-    counter_weights = list()
-    counter_weights.append(check_pickle_file_path(approximate_weights_path))
-    return counter_weights
-
-
 def load_and_train_reinforcement():
-    counter_weights = load_counter_weights()
+    counter_weights = check_pickle_file_path(approximate_weights_path)
     players = [["Ido", "H"], ["Shachar", "APPROX"]]
     number_of_games = 100
     number_of_training = 500
@@ -101,7 +95,7 @@ def load_and_train_reinforcement():
         print("End train session")
         save_weights_to_pickle_file(game)
         if i % number_of_iterations_before_testing == 0:
-            test_game = game = GameManager(players, number_of_games, levels=2, epsilon=0.05, discount=0.1, print_mode=False, counter_weights_list=load_counter_weights())
+            test_game = game = GameManager(players, number_of_games, levels=2, epsilon=0.05, discount=0.1, print_mode=False, counter_weights_list=check_pickle_file_path(approximate_weights_path))
             test_game.run_game()
             test_game.print_scoring_table()
             winning_percentages.append(test_game.get_player_score(1) / number_of_games)  # insert reinforcement agent index
@@ -117,7 +111,7 @@ def load_and_train_reinforcement():
 
 
 def run_from_parser():
-    counter_weights = load_counter_weights()
+    counter_weights = check_pickle_file_path(approximate_weights_path)
     players, number_of_games, levels, discount, epsilon, print_mode = parser(sys.argv)
     game = GameManager(players, number_of_games, levels, discount, epsilon, print_mode=print_mode, counter_weights_list=counter_weights)
     game.run_game()  # run the test
@@ -126,8 +120,8 @@ def run_from_parser():
 
 if __name__ == '__main__':
     # load_and_train_reinforcement()
-    # run_from_parser()
-    test_and_plot(5)
+    run_from_parser()
+    # test_and_plot(5)
 
 
 

@@ -1,5 +1,6 @@
 from TakiGame.DeckStuff.Card import Color
 
+
 def color_heuristic(action, game, cards):
     """
     A simple heuristic that quantify action based on the wanting to finish all the cards of the active color
@@ -29,7 +30,7 @@ def color_heuristic(action, game, cards):
             return len(action.get_cards())
         return 0
     else:  # else the agent doesn't mind
-        return len(action.get_cards())  # todo maybe just 1
+        return len(action.get_cards())
 
 
 def action_len(action, game, cards):

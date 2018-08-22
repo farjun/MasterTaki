@@ -12,14 +12,15 @@ import heapq, random
 
 from TakiGame.DeckStuff.TakiDeck import Deck
 
-HEURISTIC = "-heuristic"
+COLOR_HEURISTIC = "-H-color"
+LONGEST_HEURISTIC = "-H-longest"
+RANDOM_HEURISTIC = "-H-Random"
 ALPHA_BETA = "-alpha"
-EXPECTIMAX = "-expectimax"
 MANUAL = "-manual"
 APPROX = "-approximate"
-DISCOUNT = "-discount="
 EPSILON = "-epsilon="
 LEVELS = "-levels="
+HEURISTIC_TYPE = "-H_Type="
 PRINT_MODE = "-print_mode="
 
 
@@ -31,12 +32,10 @@ def parse_agent(agents_type):
     """
     agents = []
     for i in range(len(agents_type)):
-        if agents_type[i] == HEURISTIC:
-            agents.append(["player_{}".format(i), "H"])
+        if agents_type[i].startswith("-H-"):
+            agents.append(["player_{}".format(i), agents_type[i][1:]])
         elif agents_type[i] == ALPHA_BETA:
             agents.append(["player_{}".format(i), "A"])
-        elif agents_type[i] == EXPECTIMAX:
-            agents.append(["player_{}".format(i), "E"])
         elif agents_type[i] == MANUAL:
             agents.append(["player_{}".format(i), "M"])
         elif agents_type[i] == APPROX:
@@ -87,8 +86,6 @@ def parse_optional_arguments(arguments):
     for param in arguments:
         if param.startswith(LEVELS):
             levels = parse_levels_for_tree_agent(int(param[len(LEVELS):]))
-        elif param.startswith(DISCOUNT):
-            discount = float(param[len(DISCOUNT):])
         elif param.startswith(EPSILON):
             epsilon = float(param[len(EPSILON):])
         elif param.startswith(PRINT_MODE):
@@ -112,7 +109,7 @@ def parser(sys_parameters):
     arguments = sys_parameters[4:]
     levels, discount, epsilon, print_mode = parse_optional_arguments(arguments)
 
-    return players, number_of_games, levels, discount, epsilon, print_mode
+    return players, number_of_games, levels, discount, epsilon ,print_mode
 
 
 def random_hand(number_of_cards, game):

@@ -21,7 +21,7 @@ class AlphaBetaPruningAgent(TreeBasedAgent):
         """
         # At the depth zero return the score
         if depth == 0:
-            return self.evaluation_function[0](game.get_state()), None
+            return self.evaluation_function(game.get_state()), None
         # If it is our turn
         game_state = game.get_state()
         cards = game.get_current_player_hand()
@@ -31,7 +31,7 @@ class AlphaBetaPruningAgent(TreeBasedAgent):
 
             # In case it's the end of the recursion branch
             if len(legal_actions) == 1:
-                return self.evaluation_function[0](game_state), legal_actions[0]
+                return self.evaluation_function(game_state), legal_actions[0]
 
             max_score = -sys.maxsize
             max_action = None
@@ -61,7 +61,7 @@ class AlphaBetaPruningAgent(TreeBasedAgent):
 
             # In case it's the end of the recursion branch
             if len(legal_actions) == 1:
-                return self.evaluation_function[0](game_state), legal_actions[0]
+                return self.evaluation_function(game_state), legal_actions[0]
             # Return the mean the averaged score
 
             min_score = sys.maxsize

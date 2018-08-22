@@ -7,11 +7,11 @@ NUM_OF_ITERATIONS = 5
 MAX_SCORE = 1000
 MIN_SCORE = 0
 
+
 class ExpectimaxAgent(TreeBasedAgent):
 
     def __init__(self,game, evaluation_function, depth=2):
         super().__init__(game, evaluation_function, depth, "ExpectimaxAgent", self.recursive_expectimax)
-
 
     def recursive_expectimax(self, game, depth, agent):
         """
@@ -25,7 +25,7 @@ class ExpectimaxAgent(TreeBasedAgent):
         """
         # At the depth zero return the score
         if depth == 0:
-            return self.evaluation_function[0](game.get_state()), None
+            return self.evaluation_function(game.get_state()), None
         # If it is our turn
         game_state = game.get_state()
         cards = game.get_current_player_hand()
@@ -35,7 +35,7 @@ class ExpectimaxAgent(TreeBasedAgent):
 
             # In case it's the end of the recursion branch
             if not len(legal_actions):
-                return self.evaluation_function[0](game_state), None
+                return self.evaluation_function(game_state), None
 
             future_scores = self.operate_actions_in_a_single_depth(legal_actions, game, depth, agent, MAX_SCORE)
 
@@ -47,7 +47,7 @@ class ExpectimaxAgent(TreeBasedAgent):
 
             # In case it's the end of the recursion branch
             if not len(legal_actions):
-                return self.evaluation_function[0](game_state), None
+                return self.evaluation_function(game_state), None
             # Return the mean the averaged score
 
             future_scores = self.operate_actions_in_a_single_depth(legal_actions, game, depth - 1, agent, MIN_SCORE)
