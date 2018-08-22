@@ -3,7 +3,7 @@ import sys
 
 import numpy as np
 
-from Agents.MarkovAgents.WeightsManager import FeatureExtractors
+from Agents.MarkovAgents.FeatureExtractors import FeatureExtractors
 from Agents.PlayerInterface import PlayerInterface
 from Agents.Rewards import total_cards_dropped_reward, TERMINAL_STATE_SCORE
 from util import flipCoin
@@ -13,16 +13,9 @@ REWARD_FUNCTION = total_cards_dropped_reward
 
 class ReinforcementAgent(PlayerInterface):
 
-    def __init__(self, game, discount, epsilon, POMDP_flag, counter_weights=None):
-        if POMDP_flag:
-            super().__init__("POMDPAgent", game)
-        else:
-            super().__init__("MDPAgent", game)
-
-        self.is_fully_observable = POMDP_flag
+    def __init__(self, game, discount, epsilon, counter_weights=None):
+        super().__init__("POMDPAgent", game)
         self.Q_values = counter_weights
-        self.repeat_state_action_counter = 0
-        self.non_repeat_state_action_counter = 0
 
         # constants
         self.alpha = float(0.9)
@@ -82,10 +75,6 @@ class ReinforcementAgent(PlayerInterface):
           it will be called on your behalf
         """
         reward = REWARD_FUNCTION(state, action, nextState)
-        if self.Q_values[(state, action)] != 0:
-            self.repeat_state_action_counter += 1
-        else:
-            self.non_repeat_state_action_counter += 1
         if abs(reward) == TERMINAL_STATE_SCORE:
             # game is over, there is no meaning for next state so don't take it to account
             self.Q_values[(state, action)] += self.alpha * reward
@@ -99,16 +88,6 @@ class ReinforcementAgent(PlayerInterface):
         cur_cards = state.get_cur_player_cards()
         return self.game.logic.get_legal_actions(cur_cards)
 
-    def init_repeat_counter(self):
-        self.repeat_state_action_counter = 0
-        self.non_repeat_state_action_counter = 0
-
-    def get_repeat_counter(self):
-        return self.repeat_state_action_counter
-
-    def get_non_repeat_counter(self):
-        return self.non_repeat_state_action_counter
-
 
 class ApproximateQAgent(ReinforcementAgent):
     """
@@ -119,9 +98,9 @@ class ApproximateQAgent(ReinforcementAgent):
        should work as is.
     """
 
-    def __init__(self, game, discount, epsilon, POMDP_flag, t=1, counter_weights=None):
+    def __init__(self, game, discount, epsilon, t=1, counter_weights=None):
         self.featExtractor = FeatureExtractors()
-        ReinforcementAgent.__init__(self, game, discount, epsilon, POMDP_flag, counter_weights)
+        ReinforcementAgent.__init__(self, game, discount, epsilon, counter_weights)
         if counter_weights is None:
             self.Q_values = np.full(len(self.featExtractor), 0)
         self.t = t

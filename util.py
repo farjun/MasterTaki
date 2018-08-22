@@ -12,6 +12,108 @@ import heapq, random
 
 from TakiGame.DeckStuff.TakiDeck import Deck
 
+HEURISTIC = "-heuristic"
+ALPHA_BETA = "-alpha"
+EXPECTIMAX = "-expectimax"
+MANUAL = "-manual"
+APPROX = "-approximate"
+DISCOUNT = "-discount="
+EPSILON = "-epsilon="
+LEVELS = "-levels="
+PRINT_MODE = "-print_mode="
+
+
+def parse_agent(agents_type):
+    """
+    Parse the agents types
+    :param agents_type: A list that is containing two agent types
+    :return: A list of the players
+    """
+    agents = []
+    for i in range(len(agents_type)):
+        if agents_type[i] == HEURISTIC:
+            agents.append(["player_{}".format(i), "H"])
+        elif agents_type[i] == ALPHA_BETA:
+            agents.append(["player_{}".format(i), "A"])
+        elif agents_type[i] == EXPECTIMAX:
+            agents.append(["player_{}".format(i), "E"])
+        elif agents_type[i] == MANUAL:
+            agents.append(["player_{}".format(i), "M"])
+        elif agents_type[i] == APPROX:
+            agents.append(["player_{}".format(i), "APPROX"])
+        else:
+            print("wrong usage: agent wasn't recognised")
+            exit(1)
+    return agents
+
+
+def parse_num_of_games(num_of_games):
+    """
+    Extract the number of games
+    :param num_of_games: suppose to be a positive int
+    :return: number of games to be played
+    """
+    if num_of_games.isdigit():
+        num_of_games = int(num_of_games)
+        if num_of_games > 0:
+            return num_of_games
+    print("the number of games must be a positive int")
+    exit(1)
+
+
+def parse_levels_for_tree_agent(levels):
+    """
+    Extract the levels in which the tree will grow
+    :param levels: How deep will the recursion go
+    :return: levels
+    """
+    if 1 <= levels <= 3:
+        return levels
+    print("the levels parameter must be between 1 and 3")
+    exit(1)
+
+
+def parse_optional_arguments(arguments):
+    """
+    Extract the levels,discount and epsilon parameters if they exists
+    :param arguments: an unknown number of parameters
+    :return: levels,discount and epsilon parameters if they exists
+    """
+    # give them the default value
+    levels = 2
+    discount = 0.1
+    epsilon = 0.05
+    print_mode = False
+    for param in arguments:
+        if param.startswith(LEVELS):
+            levels = parse_levels_for_tree_agent(int(param[len(LEVELS):]))
+        elif param.startswith(DISCOUNT):
+            discount = float(param[len(DISCOUNT):])
+        elif param.startswith(EPSILON):
+            epsilon = float(param[len(EPSILON):])
+        elif param.startswith(PRINT_MODE):
+            print_mode = param[len(PRINT_MODE):] == "True"
+    return levels, discount, epsilon, print_mode
+
+
+def parser(sys_parameters):
+    """
+    Parse the script parameters
+    :return: players, number_of_games, levels, discount, epsilon
+    """
+    if len(sys_parameters) < 4:
+        print("wrong usage: two players must enter the game and the number of games must be specified")
+        exit(1)
+
+    if len(sys_parameters) > 8:
+        print("wrong usage of the script parameters")
+    players = parse_agent(sys_parameters[1:3])
+    number_of_games = parse_num_of_games(sys_parameters[3])
+    arguments = sys_parameters[4:]
+    levels, discount, epsilon, print_mode = parse_optional_arguments(arguments)
+
+    return players, number_of_games, levels, discount, epsilon, print_mode
+
 
 def random_hand(number_of_cards, game):
     """

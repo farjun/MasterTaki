@@ -6,18 +6,9 @@ from collections import Counter
 import sys
 from matplotlib import pyplot
 import numpy as np
+from util import parser
 
 approximate_weights_path = './weights/APPROXIMATE_weights.pickle'
-
-HEURISTIC = "-heuristic"
-ALPHA_BETA = "-alpha"
-EXPECTIMAX = "-expectimax"
-MANUAL = "-manual"
-APPROX = "-approximate"
-DISCOUNT = "-discount="
-EPSILON = "-epsilon="
-LEVELS = "-levels="
-PRINT_MODE = "-print_mode="
 
 
 def check_pickle_file_path(path):
@@ -31,6 +22,18 @@ def check_pickle_file_path(path):
                 c = [pickle.load(outputfile), pickle.load(outputfile)]
 
     return c
+
+
+def save_weights_to_pickle_file(game):
+    print("start save pickles")
+    for player in game.players.values():
+        if player[PLAYER_TYPE] == "FeatureAgent":
+            counter_to_save = player[PLAYER].Q_values
+            iteration_number = player[PLAYER].t
+            with open(approximate_weights_path, 'wb') as outputfile:
+                pickle.dump(counter_to_save, outputfile)
+                pickle.dump(iteration_number, outputfile)
+    print("end save pickles")
 
 
 def train_MDP_agent(game, number_of_training_for_session=100):
@@ -50,113 +53,9 @@ def train_MDP_agent(game, number_of_training_for_session=100):
     game.players[1][PLAYER].decay_alpha()
 
 
-def save_weights_to_pickle_file(game):
-    print("start save pickles")
-    for player in game.players.values():
-        if player[PLAYER_TYPE] == "FeatureAgent":
-            counter_to_save = player[PLAYER].Q_values
-            iteration_number = player[PLAYER].t
-            with open(approximate_weights_path, 'wb') as outputfile:
-                pickle.dump(counter_to_save, outputfile)
-                pickle.dump(iteration_number, outputfile)
-    print("end save pickles")
-
-
-def parse_agent(agents_type):
-    """
-    Parse the agents types
-    :param agents_type: A list that is containing two agent types
-    :return: A list of the players
-    """
-    agents = []
-    for i in range(len(agents_type)):
-        if agents_type[i] == HEURISTIC:
-            agents.append(["player_{}".format(i), "H"])
-        elif agents_type[i] == ALPHA_BETA:
-            agents.append(["player_{}".format(i), "A"])
-        elif agents_type[i] == EXPECTIMAX:
-            agents.append(["player_{}".format(i), "E"])
-        elif agents_type[i] == MANUAL:
-            agents.append(["player_{}".format(i), "M"])
-        elif agents_type[i] == APPROX:
-            agents.append(["player_{}".format(i), "APPROX"])
-        else:
-            print("wrong usage: agent wasn't recognised")
-            exit(1)
-    return agents
-
-
-def parse_num_of_games(num_of_games):
-    """
-    Extract the number of games
-    :param num_of_games: suppose to be a positive int
-    :return: number of games to be played
-    """
-    if num_of_games.isdigit():
-        num_of_games = int(num_of_games)
-        if num_of_games > 0:
-            return num_of_games
-    print("the number of games must be a positive int")
-    exit(1)
-
-
-def parse_levels_for_tree_agent(levels):
-    """
-    Extract the levels in which the tree will grow
-    :param levels: How deep will the recursion go
-    :return: levels
-    """
-    if 1 <= levels <= 3:
-        return levels
-    print("the levels parameter must be between 1 and 3")
-    exit(1)
-
-
-def parse_optional_arguments(arguments):
-    """
-    Extract the levels,discount and epsilon parameters if they exists
-    :param arguments: an unknown number of parameters
-    :return: levels,discount and epsilon parameters if they exists
-    """
-    # give them the default value
-    levels = 2
-    discount = 0.1
-    epsilon = 0.05
-    print_mode = False
-    for param in arguments:
-        if param.startswith(LEVELS):
-            levels = parse_levels_for_tree_agent(int(param[len(LEVELS):]))
-        elif param.startswith(DISCOUNT):
-            discount = float(param[len(DISCOUNT):])
-        elif param.startswith(EPSILON):
-            epsilon = float(param[len(EPSILON):])
-        elif param.startswith(PRINT_MODE):
-            print_mode = param[len(PRINT_MODE):] == "True"
-    return levels, discount, epsilon, print_mode
-
-
-def parser():
-    """
-    Parse the script parameters
-    :return: players, number_of_games, levels, discount, epsilon
-    """
-    if len(sys.argv) < 4:
-        print("wrong usage: two players must enter the game and the number of games must be specified")
-        exit(1)
-
-    if len(sys.argv) > 8:
-        print("wrong usage of the script parameters")
-    players = parse_agent(sys.argv[1:3])
-    number_of_games = parse_num_of_games(sys.argv[3])
-    arguments = sys.argv[4:]
-    levels, discount, epsilon, print_mode = parse_optional_arguments(arguments)
-
-    return players, number_of_games, levels, discount, epsilon, print_mode
-
-
 def test_and_plot(num_of_iterations):
     counter_weights = load_counter_weights()
-    players, number_of_games, levels, discount, epsilon, print_mode = parser()
+    players, number_of_games, levels, discount, epsilon, print_mode = parser(sys.argv)
     winning_percentages = [0] * num_of_iterations
     game = None
     for i in range(num_of_iterations):
@@ -219,7 +118,7 @@ def load_and_train_reinforcement():
 
 def run_from_parser():
     counter_weights = load_counter_weights()
-    players, number_of_games, levels, discount, epsilon, print_mode = parser()
+    players, number_of_games, levels, discount, epsilon, print_mode = parser(sys.argv)
     game = GameManager(players, number_of_games, levels, discount, epsilon, print_mode=print_mode, counter_weights_list=counter_weights)
     game.run_game()  # run the test
     game.print_scoring_table()
@@ -228,7 +127,7 @@ def run_from_parser():
 if __name__ == '__main__':
     # load_and_train_reinforcement()
     # run_from_parser()
-    test_and_plot(10)
+    test_and_plot(5)
 
 
 

@@ -49,7 +49,7 @@ class GameManager:
                 if counter_weights_list[0] is not None:
                     counter_weights = counter_weights_list[0][0]
                     iteration_number = counter_weights_list[0][1]
-                players[id] = [ApproximateQAgent(self, discount, epsilon, POMDP_flag=True, t=iteration_number, counter_weights=counter_weights), "FeatureAgent", 0]
+                players[id] = [ApproximateQAgent(self, discount, epsilon, t=iteration_number, counter_weights=counter_weights), "FeatureAgent", 0]
         return players
 
     def __deal_players(self):
